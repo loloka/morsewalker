@@ -56,7 +56,7 @@ function getDOMInputs() {
     russianOnly: document.getElementById('russianOnly')
       ? document.getElementById('russianOnly').checked
       : false,
-    
+
     // Effects
     qrn: document.querySelector('input[name="qrn"]:checked').value,
     qsb: document.getElementById('qsb').checked,

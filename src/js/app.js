@@ -29,7 +29,11 @@ import {
   updateActiveStations,
   printStation,
 } from './util.js';
-import { getYourStation, getCallingStation, resetRDASerialNumber } from './stationGenerator.js';
+import {
+  getYourStation,
+  getCallingStation,
+  resetRDASerialNumber,
+} from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modeLogicConfig, modeUIConfig } from './modes.js';
 import { i18n } from '../localization/index.js';
@@ -110,7 +114,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Cut Numbers
   const enableCutNumbersCheckbox = document.getElementById('enableCutNumbers');
-  const cutNumberIds = ['cutT', 'cutA', 'cutU', 'cutV', 'cutE', 'cutG', 'cutD', 'cutN'];
+  const cutNumberIds = [
+    'cutT',
+    'cutA',
+    'cutU',
+    'cutV',
+    'cutE',
+    'cutG',
+    'cutD',
+    'cutN',
+  ];
   cutNumberIds.forEach((id) => {
     const checkbox = document.getElementById(id);
     checkbox.disabled = !enableCutNumbersCheckbox.checked;
@@ -180,11 +193,13 @@ document.addEventListener('DOMContentLoaded', () => {
     yourVolume: 'yourVolume',
   };
 
-  yourCallsign.value = localStorage.getItem(keys.yourCallsign) || yourCallsign.value;
+  yourCallsign.value =
+    localStorage.getItem(keys.yourCallsign) || yourCallsign.value;
   yourName.value = localStorage.getItem(keys.yourName) || yourName.value;
   yourState.value = localStorage.getItem(keys.yourState) || yourState.value;
   yourSpeed.value = localStorage.getItem(keys.yourSpeed) || yourSpeed.value;
-  yourSidetone.value = localStorage.getItem(keys.yourSidetone) || yourSidetone.value;
+  yourSidetone.value =
+    localStorage.getItem(keys.yourSidetone) || yourSidetone.value;
   yourVolume.value = localStorage.getItem(keys.yourVolume) || yourVolume.value;
 
   yourCallsign.addEventListener('input', () => {
@@ -217,11 +232,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const modeExists = modeUIConfig[savedMode] !== undefined;
   const modeToUse = modeExists ? savedMode : 'single';
 
-  const savedModeRadio = document.querySelector(`input[name="mode"][value="${modeToUse}"]`);
+  const savedModeRadio = document.querySelector(
+    `input[name="mode"][value="${modeToUse}"]`
+  );
   if (savedModeRadio) {
     savedModeRadio.checked = true;
   } else {
-    const singleRadio = document.querySelector(`input[name="mode"][value="single"]`);
+    const singleRadio = document.querySelector(
+      `input[name="mode"][value="single"]`
+    );
     if (singleRadio) {
       singleRadio.checked = true;
     }
@@ -230,14 +249,14 @@ document.addEventListener('DOMContentLoaded', () => {
   currentMode = modeToUse;
 
   if (yourCallsign.value !== '' && window.location.hostname !== 'localhost') {
-  fetch(`https://stats.${window.location.hostname}/api/submit`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode: currentMode, callsign: yourCallsign.value }),
-  }).catch((error) => {
-    console.error('Failed to send CloudFlare stats.');
-  });
-}
+    fetch(`https://stats.${window.location.hostname}/api/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: currentMode, callsign: yourCallsign.value }),
+    }).catch((error) => {
+      console.error('Failed to send CloudFlare stats.');
+    });
+  }
 
   resetGameState();
   applyModeSettings(currentMode);
@@ -250,14 +269,15 @@ function updateLanguage(lang) {
   i18n.setLanguage(lang);
 }
 
-
 /**
  * Functions
  */
 function getModeConfig() {
   const config = modeLogicConfig[currentMode];
   if (!config) {
-    console.error(`❌ Mode "${currentMode}" not found in modeLogicConfig. Using "single".`);
+    console.error(
+      `❌ Mode "${currentMode}" not found in modeLogicConfig. Using "single".`
+    );
     return modeLogicConfig['single'];
   }
   return config;
@@ -265,11 +285,15 @@ function getModeConfig() {
 
 function applyModeSettings(mode) {
   const config = modeUIConfig[mode];
-  
+
   if (!config) {
-    console.error(`❌ Mode "${mode}" not found in modeUIConfig. Defaulting to "single".`);
+    console.error(
+      `❌ Mode "${mode}" not found in modeUIConfig. Defaulting to "single".`
+    );
     currentMode = 'single';
-    const singleRadio = document.querySelector('input[name="mode"][value="single"]');
+    const singleRadio = document.querySelector(
+      'input[name="mode"][value="single"]'
+    );
     if (singleRadio) singleRadio.checked = true;
     applyModeSettings('single');
     return;
@@ -283,7 +307,7 @@ function applyModeSettings(mode) {
       console.log('✅ Russian Only enabled for RDA mode');
     }
   }
-  
+
   const tuButton = document.getElementById('tuButton');
   const infoField = document.getElementById('infoField');
   const infoField2 = document.getElementById('infoField2');
@@ -315,7 +339,9 @@ function applyModeSettings(mode) {
     col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
   });
 
-  const extraColumnHeaders = resultsTable.querySelectorAll('thead .mode-specific-column');
+  const extraColumnHeaders = resultsTable.querySelectorAll(
+    'thead .mode-specific-column'
+  );
   extraColumnHeaders.forEach((header) => {
     header.textContent = config.extraColumnHeader || 'Additional Info';
   });
@@ -341,7 +367,9 @@ function resetGameState() {
 }
 
 function changeMode() {
-  const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+  const selectedMode = document.querySelector(
+    'input[name="mode"]:checked'
+  ).value;
   currentMode = selectedMode;
   localStorage.setItem('mode', currentMode);
   resetGameState();
@@ -412,7 +440,11 @@ function send() {
     let yourResponseTimer = yourStation.player.playSentence(responseFieldText);
     updateAudioLock(yourResponseTimer);
 
-    if (responseFieldText === '?' || responseFieldText === 'AGN' || responseFieldText === 'AGN?') {
+    if (
+      responseFieldText === '?' ||
+      responseFieldText === 'AGN' ||
+      responseFieldText === 'AGN?'
+    ) {
       respondWithAllStations(currentStations, yourResponseTimer);
       lastRespondingStations = currentStations;
       currentStationAttempts++;
@@ -422,7 +454,10 @@ function send() {
     if (responseFieldText === 'QRS') {
       lastRespondingStations.forEach((stn) => {
         if (stn.enableFarnsworth) {
-          stn.farnsworthSpeed = Math.max(5, stn.farnsworthSpeed - farnsworthLowerBy);
+          stn.farnsworthSpeed = Math.max(
+            5,
+            stn.farnsworthSpeed - farnsworthLowerBy
+          );
         } else {
           stn.enableFarnsworth = true;
           stn.farnsworthSpeed = stn.wpm - farnsworthLowerBy;
@@ -441,29 +476,46 @@ function send() {
     if (results.includes('perfect')) {
       let matchIndex = results.indexOf('perfect');
       if (hasQuestionMark) {
-        let theirResponseTimer = currentStations[matchIndex].player.playSentence(
-          'RR',
-          yourResponseTimer + 0.25
-        );
+        let theirResponseTimer = currentStations[
+          matchIndex
+        ].player.playSentence('RR', yourResponseTimer + 0.25);
         updateAudioLock(theirResponseTimer);
         currentStationAttempts++;
         return;
       } else {
-        let yourExchange = ' ' + modeConfig.yourExchange(yourStation, currentStations[matchIndex], null);
-        let theirExchange = modeConfig.theirExchange(yourStation, currentStations[matchIndex], null);
+        let yourExchange =
+          ' ' +
+          modeConfig.yourExchange(
+            yourStation,
+            currentStations[matchIndex],
+            null
+          );
+        let theirExchange = modeConfig.theirExchange(
+          yourStation,
+          currentStations[matchIndex],
+          null
+        );
 
         if (inputs.enableCutNumbers) {
           const cutMap = inputs.cutNumbers;
-          yourExchange = yourExchange.replace(/\d/g, (digit) => cutMap[digit] || digit);
-          theirExchange = theirExchange.replace(/\d/g, (digit) => cutMap[digit] || digit);
+          yourExchange = yourExchange.replace(
+            /\d/g,
+            (digit) => cutMap[digit] || digit
+          );
+          theirExchange = theirExchange.replace(
+            /\d/g,
+            (digit) => cutMap[digit] || digit
+          );
         }
 
-        let yourResponseTimer2 = yourStation.player.playSentence(yourExchange, yourResponseTimer);
-        updateAudioLock(yourResponseTimer2);
-        let theirResponseTimer = currentStations[matchIndex].player.playSentence(
-          theirExchange,
-          yourResponseTimer2 + 0.5
+        let yourResponseTimer2 = yourStation.player.playSentence(
+          yourExchange,
+          yourResponseTimer
         );
+        updateAudioLock(yourResponseTimer2);
+        let theirResponseTimer = currentStations[
+          matchIndex
+        ].player.playSentence(theirExchange, yourResponseTimer2 + 0.5);
         updateAudioLock(theirResponseTimer);
         currentStationAttempts++;
 
@@ -477,7 +529,9 @@ function send() {
     }
 
     if (results.includes('partial')) {
-      let partialMatchStations = currentStations.filter((_, index) => results[index] === 'partial');
+      let partialMatchStations = currentStations.filter(
+        (_, index) => results[index] === 'partial'
+      );
       respondWithAllStations(partialMatchStations, yourResponseTimer);
       lastRespondingStations = partialMatchStations;
       currentStationAttempts++;
@@ -491,7 +545,11 @@ function send() {
     let yourResponseTimer = yourStation.player.playSentence(responseFieldText);
     updateAudioLock(yourResponseTimer);
 
-    if (responseFieldText === '?' || responseFieldText === 'AGN' || responseFieldText === 'AGN?') {
+    if (
+      responseFieldText === '?' ||
+      responseFieldText === 'AGN' ||
+      responseFieldText === 'AGN?'
+    ) {
       let theirResponseTimer = currentStation.player.playSentence(
         currentStation.callsign,
         yourResponseTimer + Math.random() + 0.25
@@ -503,7 +561,10 @@ function send() {
 
     if (responseFieldText === 'QRS') {
       if (currentStation.enableFarnsworth) {
-        currentStation.farnsworthSpeed = Math.max(5, currentStation.farnsworthSpeed - farnsworthLowerBy);
+        currentStation.farnsworthSpeed = Math.max(
+          5,
+          currentStation.farnsworthSpeed - farnsworthLowerBy
+        );
       } else {
         currentStation.enableFarnsworth = true;
         currentStation.farnsworthSpeed = currentStation.wpm - farnsworthLowerBy;
@@ -518,35 +579,68 @@ function send() {
       return;
     }
 
-    let compareResult = compareStrings(currentStation.callsign, responseFieldText.replace('?', ''));
+    let compareResult = compareStrings(
+      currentStation.callsign,
+      responseFieldText.replace('?', '')
+    );
 
     if (compareResult === 'perfect') {
       currentStationAttempts++;
 
       if (responseFieldText.includes('?')) {
-        let theirResponseTimer = currentStation.player.playSentence('RR', yourResponseTimer + 1);
+        let theirResponseTimer = currentStation.player.playSentence(
+          'RR',
+          yourResponseTimer + 1
+        );
         updateAudioLock(theirResponseTimer);
         return;
       }
 
-      let yourExchange = ' ' + modeConfig.yourExchange(yourStation, currentStation, null);
-      let theirExchange = modeConfig.theirExchange(yourStation, currentStation, null);
+      let yourExchange =
+        ' ' + modeConfig.yourExchange(yourStation, currentStation, null);
+      let theirExchange = modeConfig.theirExchange(
+        yourStation,
+        currentStation,
+        null
+      );
 
-      let yourResponseTimer2 = yourStation.player.playSentence(yourExchange, yourResponseTimer);
+      let yourResponseTimer2 = yourStation.player.playSentence(
+        yourExchange,
+        yourResponseTimer
+      );
       updateAudioLock(yourResponseTimer2);
-      let theirResponseTimer = currentStation.player.playSentence(theirExchange, yourResponseTimer2 + 0.5);
+      let theirResponseTimer = currentStation.player.playSentence(
+        theirExchange,
+        yourResponseTimer2 + 0.5
+      );
       updateAudioLock(theirResponseTimer);
-      let yourSignoff = modeConfig.yourSignoff(yourStation, currentStation, null);
-      let yourResponseTimer3 = yourStation.player.playSentence(yourSignoff, theirResponseTimer + 0.5);
+      let yourSignoff = modeConfig.yourSignoff(
+        yourStation,
+        currentStation,
+        null
+      );
+      let yourResponseTimer3 = yourStation.player.playSentence(
+        yourSignoff,
+        theirResponseTimer + 0.5
+      );
       updateAudioLock(yourResponseTimer3);
-      let theirSignoff = modeConfig.theirSignoff(yourStation, currentStation, null);
-      let theirResponseTimer2 = currentStation.player.playSentence(theirSignoff, yourResponseTimer3 + 0.5);
+      let theirSignoff = modeConfig.theirSignoff(
+        yourStation,
+        currentStation,
+        null
+      );
+      let theirResponseTimer2 = currentStation.player.playSentence(
+        theirSignoff,
+        yourResponseTimer3 + 0.5
+      );
       updateAudioLock(theirResponseTimer2);
 
       totalContacts++;
       const wpmString =
         `${currentStation.wpm}` +
-        (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+        (currentStation.enableFarnsworth
+          ? ` / ${currentStation.farnsworthSpeed}`
+          : '');
       addTableRow(
         'resultsTable',
         totalContacts,
@@ -572,7 +666,7 @@ function send() {
     currentStationAttempts++;
     let theirResponseTimer = currentStation.player.playSentence(
       currentStation.callsign,
-            yourResponseTimer + Math.random() + 0.25
+      yourResponseTimer + Math.random() + 0.25
     );
     updateAudioLock(theirResponseTimer);
   }
@@ -592,10 +686,18 @@ function tu() {
   totalContacts++;
 
   let extraInfo = '';
-  extraInfo += compareExtraInfo(modeConfig.extraInfoFieldKey, infoValue1, currentStation);
+  extraInfo += compareExtraInfo(
+    modeConfig.extraInfoFieldKey,
+    infoValue1,
+    currentStation
+  );
   if (modeConfig.requiresInfoField2 && modeConfig.extraInfoFieldKey2) {
     if (extraInfo.length > 0) extraInfo += ' / ';
-    extraInfo += compareExtraInfo(modeConfig.extraInfoFieldKey2, infoValue2, currentStation);
+    extraInfo += compareExtraInfo(
+      modeConfig.extraInfoFieldKey2,
+      infoValue2,
+      currentStation
+    );
   }
 
   let arbitrary = null;
@@ -605,7 +707,11 @@ function tu() {
     arbitrary = infoValue1;
   }
 
-  let yourSignoffMessage = modeConfig.yourSignoff(yourStation, currentStation, arbitrary);
+  let yourSignoffMessage = modeConfig.yourSignoff(
+    yourStation,
+    currentStation,
+    arbitrary
+  );
 
   let yourResponseTimer = yourStation.player.playSentence(
     yourSignoffMessage,
@@ -616,7 +722,11 @@ function tu() {
   let responseTimerToUse = yourResponseTimer;
 
   if (typeof modeConfig.theirSignoff === 'function') {
-    let theirSignoffMessage = modeConfig.theirSignoff(yourStation, currentStation, null);
+    let theirSignoffMessage = modeConfig.theirSignoff(
+      yourStation,
+      currentStation,
+      null
+    );
     if (theirSignoffMessage) {
       let theirResponseTimer = currentStation.player.playSentence(
         theirSignoffMessage,
@@ -629,7 +739,9 @@ function tu() {
 
   const wpmString =
     `${currentStation.wpm}` +
-    (currentStation.enableFarnsworth ? ` / ${currentStation.farnsworthSpeed}` : '');
+    (currentStation.enableFarnsworth
+      ? ` / ${currentStation.farnsworthSpeed}`
+      : '');
 
   addTableRow(
     'resultsTable',

@@ -123,7 +123,7 @@ export const modeLogicConfig = {
     requiresInfoField2: false,
     showTuStep: true,
     modeName: 'RDA',
-    extraInfoFieldKey: 'rdaRegion',  // ← ИЗМЕНЕНО с 'state' на 'rdaRegion'
+    extraInfoFieldKey: 'rdaRegion', // ← ИЗМЕНЕНО с 'state' на 'rdaRegion'
     extraInfoFieldKey2: null,
   },
   contest: {

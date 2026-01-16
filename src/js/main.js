@@ -13,6 +13,6 @@ console.log('🚀 Main.js loaded');
 
 document.addEventListener('DOMContentLoaded', () => {
   console.log('✅ Main.js: DOM ready');
-  
+
   // Future application extensions
 });

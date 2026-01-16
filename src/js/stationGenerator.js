@@ -22,71 +22,330 @@ const US_CALLSIGN_PREFIXES_WEIGHTED = [
 
 // 🇷🇺 Российские префиксы с весами
 const RUSSIAN_CALLSIGN_PREFIXES_WEIGHTED = [
-  { value: 'R', weight: 30 },    // 30%
-  { value: 'U', weight: 25 },    // 25%
-  { value: 'RA', weight: 15 },   // 15%
-  { value: 'RW', weight: 10 },   // 10%
-  { value: 'RK', weight: 5 },    // 5%
-  { value: 'RN', weight: 5 },    // 5%
-  { value: 'RZ', weight: 3 },    // 3%
-  { value: 'UA', weight: 2 },    // 2%
-  { value: 'UB', weight: 1 },    // 1%
-  { value: 'UC', weight: 1 },    // 1%
-  { value: 'UD', weight: 1 },    // 1%
-  { value: 'UE', weight: 1 },    // 1%
+  { value: 'R', weight: 30 }, // 30%
+  { value: 'U', weight: 25 }, // 25%
+  { value: 'RA', weight: 15 }, // 15%
+  { value: 'RW', weight: 10 }, // 10%
+  { value: 'RK', weight: 5 }, // 5%
+  { value: 'RN', weight: 5 }, // 5%
+  { value: 'RZ', weight: 3 }, // 3%
+  { value: 'UA', weight: 2 }, // 2%
+  { value: 'UB', weight: 1 }, // 1%
+  { value: 'UC', weight: 1 }, // 1%
+  { value: 'UD', weight: 1 }, // 1%
+  { value: 'UE', weight: 1 }, // 1%
 ];
 
 const NON_US_CALLSIGN_PREFIXES = [
-  '9A', 'CT', 'DL', 'E', 'EA', 'EI', 'ES', 'EU', 'F', 'G', 'GM', 'GW',
-  'HA', 'HB', 'I', 'JA', 'LA', 'LU', 'LY', 'LZ', 'OE', 'OH', 'OK', 'OM',
-  'ON', 'OZ', 'PA', 'PY', 'S', 'SM', 'SP', 'SV', 'UA', 'UR', 'VE', 'VK',
-  'YO', 'YT',
+  '9A',
+  'CT',
+  'DL',
+  'E',
+  'EA',
+  'EI',
+  'ES',
+  'EU',
+  'F',
+  'G',
+  'GM',
+  'GW',
+  'HA',
+  'HB',
+  'I',
+  'JA',
+  'LA',
+  'LU',
+  'LY',
+  'LZ',
+  'OE',
+  'OH',
+  'OK',
+  'OM',
+  'ON',
+  'OZ',
+  'PA',
+  'PY',
+  'S',
+  'SM',
+  'SP',
+  'SV',
+  'UA',
+  'UR',
+  'VE',
+  'VK',
+  'YO',
+  'YT',
 ];
 
 const stateAbbreviations = [
-  'AL', 'AK', 'AZ', 'AR', 'CA', 'CO', 'CT', 'DE', 'FL', 'GA',
-  'HI', 'ID', 'IL', 'IN', 'IA', 'KS', 'KY', 'LA', 'ME', 'MD',
-  'MA', 'MI', 'MN', 'MS', 'MO', 'MT', 'NE', 'NV', 'NH', 'NJ',
-  'NM', 'NY', 'NC', 'ND', 'OH', 'OK', 'OR', 'PA', 'RI', 'SC',
-  'SD', 'TN', 'TX', 'UT', 'VT', 'VA', 'WA', 'WV', 'WI', 'WY',
+  'AL',
+  'AK',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'FL',
+  'GA',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'OH',
+  'OK',
+  'OR',
+  'PA',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
 ];
 
 // 🇷🇺 Российские регионы (сокращения для радиолюбительских обменов)
 const russianRegions = [
-  'MOW', 'MOS', 'SPE', 'LEN', 'SVE', 'CHE', 'NVS', 'KRA', 'ROS', 'NIZ',
-  'SAM', 'VOR', 'KDA', 'TYU', 'OMS', 'PER', 'VGG', 'UFA', 'TAT', 'IRK',
-  'SAR', 'TOM', 'KEM', 'ORE', 'KIR', 'YAR', 'TVE', 'ULY', 'KLU', 'BRY',
-  'VLA', 'RYA', 'PNZ', 'LIP', 'TUL', 'KUR', 'AST', 'BEL', 'ORL', 'KOS',
-  'PSK', 'NGR', 'VLG', 'SMO', 'TAM', 'IVA', 'STA', 'ALT', 'ZAB', 'BUR',
-  'ARK', 'MUR', 'KRL', 'KOM', 'KGN', 'MAG', 'SAK', 'KAM', 'AMU', 'YAN',
-  'KHM', 'NEN', 'CHU', 'ADP', 'KLM', 'TYV', 'KHA', 'ALA', 'MAR', 'MOR',
-  'UDM', 'BAS', 'KRM', 'SEV', 'YEV',
+  'MOW',
+  'MOS',
+  'SPE',
+  'LEN',
+  'SVE',
+  'CHE',
+  'NVS',
+  'KRA',
+  'ROS',
+  'NIZ',
+  'SAM',
+  'VOR',
+  'KDA',
+  'TYU',
+  'OMS',
+  'PER',
+  'VGG',
+  'UFA',
+  'TAT',
+  'IRK',
+  'SAR',
+  'TOM',
+  'KEM',
+  'ORE',
+  'KIR',
+  'YAR',
+  'TVE',
+  'ULY',
+  'KLU',
+  'BRY',
+  'VLA',
+  'RYA',
+  'PNZ',
+  'LIP',
+  'TUL',
+  'KUR',
+  'AST',
+  'BEL',
+  'ORL',
+  'KOS',
+  'PSK',
+  'NGR',
+  'VLG',
+  'SMO',
+  'TAM',
+  'IVA',
+  'STA',
+  'ALT',
+  'ZAB',
+  'BUR',
+  'ARK',
+  'MUR',
+  'KRL',
+  'KOM',
+  'KGN',
+  'MAG',
+  'SAK',
+  'KAM',
+  'AMU',
+  'YAN',
+  'KHM',
+  'NEN',
+  'CHU',
+  'ADP',
+  'KLM',
+  'TYV',
+  'KHA',
+  'ALA',
+  'MAR',
+  'MOR',
+  'UDM',
+  'BAS',
+  'KRM',
+  'SEV',
+  'YEV',
 ];
 
 const names = [
-  'Adam', 'Ahmed', 'Ali', 'Amanda', 'Amy', 'Ana', 'Andrew', 'Angela', 'Anna',
-  'Anthony', 'Aria', 'Ashley', 'Barbara', 'Benjamin', 'Brandon', 'Brian',
-  'Charles', 'Christopher', 'Cynthia', 'Daniel', 'David', 'Deborah', 'Dennis',
-  'Donna', 'Dorothy', 'Edward', 'Elena', 'Elizabeth', 'Emily', 'Eric',
-  'Fatima', 'Frank', 'George', 'Gregory', 'Heather', 'Henry', 'Hong', 'Jack',
-  'Jacob', 'James', 'Jason', 'Jeffrey', 'Jennifer', 'Jessica', 'John',
-  'Jonathan', 'Joseph', 'Joshua', 'Justin', 'Karen', 'Katherine', 'Kathleen',
-  'Kevin', 'Kimberly', 'Larry', 'Laura', 'Linda', 'Lisa', 'Maria', 'Margaret',
-  'Mark', 'Mary', 'Matthew', 'Melissa', 'Michael', 'Michelle', 'Mohammad',
-  'Nancy', 'Nicole', 'Nicholas', 'Noor', 'Patricia', 'Patrick', 'Paul',
-  'Peter', 'Rebecca', 'Richard', 'Robert', 'Ronald', 'Ryan', 'Sandra',
-  'Sarah', 'Scott', 'Shirley', 'Sofia', 'Stephanie', 'Stephen', 'Steven',
-  'Susan', 'Thomas', 'Timothy', 'Tyler', 'Wei', 'William', 'Yan',
+  'Adam',
+  'Ahmed',
+  'Ali',
+  'Amanda',
+  'Amy',
+  'Ana',
+  'Andrew',
+  'Angela',
+  'Anna',
+  'Anthony',
+  'Aria',
+  'Ashley',
+  'Barbara',
+  'Benjamin',
+  'Brandon',
+  'Brian',
+  'Charles',
+  'Christopher',
+  'Cynthia',
+  'Daniel',
+  'David',
+  'Deborah',
+  'Dennis',
+  'Donna',
+  'Dorothy',
+  'Edward',
+  'Elena',
+  'Elizabeth',
+  'Emily',
+  'Eric',
+  'Fatima',
+  'Frank',
+  'George',
+  'Gregory',
+  'Heather',
+  'Henry',
+  'Hong',
+  'Jack',
+  'Jacob',
+  'James',
+  'Jason',
+  'Jeffrey',
+  'Jennifer',
+  'Jessica',
+  'John',
+  'Jonathan',
+  'Joseph',
+  'Joshua',
+  'Justin',
+  'Karen',
+  'Katherine',
+  'Kathleen',
+  'Kevin',
+  'Kimberly',
+  'Larry',
+  'Laura',
+  'Linda',
+  'Lisa',
+  'Maria',
+  'Margaret',
+  'Mark',
+  'Mary',
+  'Matthew',
+  'Melissa',
+  'Michael',
+  'Michelle',
+  'Mohammad',
+  'Nancy',
+  'Nicole',
+  'Nicholas',
+  'Noor',
+  'Patricia',
+  'Patrick',
+  'Paul',
+  'Peter',
+  'Rebecca',
+  'Richard',
+  'Robert',
+  'Ronald',
+  'Ryan',
+  'Sandra',
+  'Sarah',
+  'Scott',
+  'Shirley',
+  'Sofia',
+  'Stephanie',
+  'Stephen',
+  'Steven',
+  'Susan',
+  'Thomas',
+  'Timothy',
+  'Tyler',
+  'Wei',
+  'William',
+  'Yan',
 ];
 
 // 🇷🇺 Русские имена
 const russianNames = [
-  'Александр', 'Алексей', 'Андрей', 'Анатолий', 'Антон', 'Борис', 'Вадим',
-  'Валерий', 'Василий', 'Виктор', 'Виталий', 'Владимир', 'Владислав',
-  'Вячеслав', 'Геннадий', 'Георгий', 'Григорий', 'Дмитрий', 'Евгений',
-  'Егор', 'Иван', 'Игорь', 'Илья', 'Кирилл', 'Константин', 'Леонид',
-  'Максим', 'Михаил', 'Николай', 'Олег', 'Павел', 'Петр', 'Роман',
-  'Сергей', 'Станислав', 'Юрий', 'Ярослав',
+  'Александр',
+  'Алексей',
+  'Андрей',
+  'Анатолий',
+  'Антон',
+  'Борис',
+  'Вадим',
+  'Валерий',
+  'Василий',
+  'Виктор',
+  'Виталий',
+  'Владимир',
+  'Владислав',
+  'Вячеслав',
+  'Геннадий',
+  'Георгий',
+  'Григорий',
+  'Дмитрий',
+  'Евгений',
+  'Егор',
+  'Иван',
+  'Игорь',
+  'Илья',
+  'Кирилл',
+  'Константин',
+  'Леонид',
+  'Максим',
+  'Михаил',
+  'Николай',
+  'Олег',
+  'Павел',
+  'Петр',
+  'Роман',
+  'Сергей',
+  'Станислав',
+  'Юрий',
+  'Ярослав',
 ];
 
 // 🆕 Счётчик для нероссийских станций в RDA Contest
@@ -114,7 +373,7 @@ export function getCallingStation() {
 
   // 🇷🇺 Определяем тип станции: US, Russian, или International
   let stationType = 'international';
-  
+
   if (inputs.usOnly) {
     stationType = 'us';
   } else if (inputs.russianOnly) {
@@ -132,7 +391,7 @@ export function getCallingStation() {
   }
 
   let callsign, state, name, rdaRegion, serialNumber;
-  
+
   switch (stationType) {
     case 'us':
       callsign = getRandomUSCallsign(inputs.formats);
@@ -162,14 +421,21 @@ export function getCallingStation() {
 
   return {
     callsign,
-    wpm: Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) + inputs.minSpeed,
+    wpm:
+      Math.floor(Math.random() * (inputs.maxSpeed - inputs.minSpeed + 1)) +
+      inputs.minSpeed,
     enableFarnsworth: inputs.enableFarnsworth,
     farnsworthSpeed: inputs.farnsworthSpeed || null,
-    volume: Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
-    frequency: Math.floor(Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone),
+    volume:
+      Math.random() * (inputs.maxVolume - inputs.minVolume) + inputs.minVolume,
+    frequency: Math.floor(
+      Math.random() * (inputs.maxTone - inputs.minTone) + inputs.minTone
+    ),
     name,
     state,
-    serialNumber: (Math.floor(Math.random() * 30) + 1).toString().padStart(2, '0'),
+    serialNumber: (Math.floor(Math.random() * 30) + 1)
+      .toString()
+      .padStart(2, '0'),
     cwopsNumber: Math.floor(Math.random() * 4000) + 1,
     rdaRegion: rdaExchange, // 🆕 RDA обмен
     player: null,
@@ -201,13 +467,20 @@ function getRandomUSCallsign(formats) {
   let prefixLettersToGenerate = parseInt(format.slice(0, 1)) - prefix.length;
 
   switch (format) {
-    case '1x1': return `${prefix}${number}${generateRandomLetters(1)}`;
-    case '1x2': return `${prefix}${number}${generateRandomLetters(2)}`;
-    case '1x3': return `${prefix}${number}${generateRandomLetters(3)}`;
-    case '2x1': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(1)}`;
-    case '2x2': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(2)}`;
-    case '2x3': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(3)}`;
-    default: return `${prefix}${number}${generateRandomLetters(3)}`;
+    case '1x1':
+      return `${prefix}${number}${generateRandomLetters(1)}`;
+    case '1x2':
+      return `${prefix}${number}${generateRandomLetters(2)}`;
+    case '1x3':
+      return `${prefix}${number}${generateRandomLetters(3)}`;
+    case '2x1':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(1)}`;
+    case '2x2':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(2)}`;
+    case '2x3':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(3)}`;
+    default:
+      return `${prefix}${number}${generateRandomLetters(3)}`;
   }
 }
 
@@ -229,13 +502,20 @@ function getRandomRussianCallsign(formats) {
   let prefixLettersToGenerate = parseInt(format.slice(0, 1)) - prefix.length;
 
   switch (format) {
-    case '1x1': return `${prefix}${number}${generateRandomLetters(1)}`;
-    case '1x2': return `${prefix}${number}${generateRandomLetters(2)}`;
-    case '1x3': return `${prefix}${number}${generateRandomLetters(3)}`;
-    case '2x1': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(1)}`;
-    case '2x2': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(2)}`;
-    case '2x3': return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(3)}`;
-    default: return `${prefix}${number}${generateRandomLetters(3)}`;
+    case '1x1':
+      return `${prefix}${number}${generateRandomLetters(1)}`;
+    case '1x2':
+      return `${prefix}${number}${generateRandomLetters(2)}`;
+    case '1x3':
+      return `${prefix}${number}${generateRandomLetters(3)}`;
+    case '2x1':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(1)}`;
+    case '2x2':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(2)}`;
+    case '2x3':
+      return `${prefix}${generateRandomLetters(prefixLettersToGenerate)}${number}${generateRandomLetters(3)}`;
+    default:
+      return `${prefix}${number}${generateRandomLetters(3)}`;
   }
 }
 

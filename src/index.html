@@ -81,41 +81,66 @@
 
   <body class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-  <div>
-    <h1 class="mb-0" style="display: inline-block; line-height: 1">
-      <span id="app-title"></span>
-      <img
-        src="img/morsewalker-logo.png"
-        alt="Morse Walker Logo"
-        style="height: 1em; vertical-align: bottom"
-      />
-    </h1>
-    <p class="fw-bold fst-italic" id="app-subtitle">Walk before you run!</p>
-  </div>
-  
-    <!-- Beta Warning Banner -->
-    <div class="container">
-      <div class="row justify-content-center mt-3">
-        <div class="col-lg-10 col-xl-8">
-          <div id="betaWarning" class="alert alert-danger alert-dismissible fade show" role="alert" style="background-color: #f8d7da; border-color: #f5c2c7;">
-            <p class="mb-0">
-              <span data-i18n="betaWarning.text">Morse Walker is currently in <strong>beta</strong> and <em>your feedback is invaluable!</em></span>
-              <a href="https://github.com/sc0tfree/morsewalker/issues/new/choose" target="_blank" class="alert-link fw-bold" data-i18n="betaWarning.submitIssue">Submit an issue</a> 
-              <span data-i18n="betaWarning.forBugs">for bugs or feature requests, or email</span>
-              <a href="mailto:henry@w6nyc.com" class="alert-link">henry@w6nyc.com</a> / 
-              <a href="mailto:admin@r9o.ru" class="alert-link">admin@r9o.ru</a>.
-            </p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <div>
+        <h1 class="mb-0" style="display: inline-block; line-height: 1">
+          <span id="app-title"></span>
+          <img
+            src="img/morsewalker-logo.png"
+            alt="Morse Walker Logo"
+            style="height: 1em; vertical-align: bottom"
+          />
+        </h1>
+        <p class="fw-bold fst-italic" id="app-subtitle">Walk before you run!</p>
+      </div>
+
+      <!-- Beta Warning Banner -->
+      <div class="container">
+        <div class="row justify-content-center mt-3">
+          <div class="col-lg-10 col-xl-8">
+            <div
+              id="betaWarning"
+              class="alert alert-danger alert-dismissible fade show"
+              role="alert"
+              style="background-color: #f8d7da; border-color: #f5c2c7"
+            >
+              <p class="mb-0">
+                <span data-i18n="betaWarning.text"
+                  >Morse Walker is currently in <strong>beta</strong> and
+                  <em>your feedback is invaluable!</em></span
+                >
+                <a
+                  href="https://github.com/sc0tfree/morsewalker/issues/new/choose"
+                  target="_blank"
+                  class="alert-link fw-bold"
+                  data-i18n="betaWarning.submitIssue"
+                  >Submit an issue</a
+                >
+                <span data-i18n="betaWarning.forBugs"
+                  >for bugs or feature requests, or email</span
+                >
+                <a href="mailto:henry@w6nyc.com" class="alert-link"
+                  >henry@w6nyc.com</a
+                >
+                /
+                <a href="mailto:admin@r9o.ru" class="alert-link">admin@r9o.ru</a
+                >.
+              </p>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"
+              ></button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  
-    <!-- Переключатель языка -->
-    <div class="language-switcher me-3">
-      <button id="lang-en" class="lang-btn active">EN</button>
-      <button id="lang-ru" class="lang-btn">RU</button>
-    </div>
+
+      <!-- Переключатель языка -->
+      <div class="language-switcher me-3">
+        <button id="lang-en" class="lang-btn active">EN</button>
+        <button id="lang-ru" class="lang-btn">RU</button>
+      </div>
     </div>
 
     <hr />
@@ -182,10 +207,11 @@
             value="rda"
             autocomplete="off"
           />
-          <label 
-            class="btn btn-outline-primary d-flex align-items-center justify-content-center" 
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
             for="modeRda"
-          >RDA</label>
+            >RDA</label
+          >
 
           <input
             type="radio"
@@ -601,7 +627,8 @@
                     for="russianOnly"
                     id="russianOnlyLabel"
                   >
-                    <i class="fa-regular fa-circle-xmark me-2"></i>Russian Only Callsigns
+                    <i class="fa-regular fa-circle-xmark me-2"></i>Russian Only
+                    Callsigns
                   </label>
                 </div>
 
@@ -1038,77 +1065,135 @@
     </div>
 
     <!-- Help Modal -->
-<div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="helpModalLabel" data-i18n="help.title">Getting Started</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        
-        <!-- Cheat Section -->
-        <div class="alert alert-info">
-          <h6 data-i18n="help.cheatTitle">How to "Cheat"</h6>
-          <p data-i18n="help.cheatText">If you feel like you need a little extra help to get started, open your browser's JavaScript console to see behind the scenes information, such as which stations are calling.</p>
-          <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd>
-        </div>
+    <div
+      class="modal fade"
+      id="helpModal"
+      tabindex="-1"
+      aria-labelledby="helpModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="helpModalLabel" data-i18n="help.title">
+              Getting Started
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- Cheat Section -->
+            <div class="alert alert-info">
+              <h6 data-i18n="help.cheatTitle">How to "Cheat"</h6>
+              <p data-i18n="help.cheatText">
+                If you feel like you need a little extra help to get started,
+                open your browser's JavaScript console to see behind the scenes
+                information, such as which stations are calling.
+              </p>
+              <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd>
+            </div>
 
-        <!-- Step 1 -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.step1Title">Click "CQ" to start calling</h6>
-          <p data-i18n="help.step1Text">Up to your "Max Stations" will respond. It may start slowly, often with just one or two stations initially. If you want more stations, just call CQ again!</p>
-        </div>
+            <!-- Step 1 -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.step1Title">Click "CQ" to start calling</h6>
+              <p data-i18n="help.step1Text">
+                Up to your "Max Stations" will respond. It may start slowly,
+                often with just one or two stations initially. If you want more
+                stations, just call CQ again!
+              </p>
+            </div>
 
-        <!-- Step 2 -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.step2Title">Enter the callsign</h6>
-          <p data-i18n="help.step2Text">Enter the callsign of the station you'd like to work.</p>
-          <ul>
-            <li data-i18n="help.step2List.0">Send 'AGN', 'AGN?', or '?' to request all stations to repeat themselves.</li>
-            <li data-i18n="help.step2List.1">Use partial matches to single out stations in a pileup. E.g., for W6NYC, all of the following will get a reply back: 'W?', 'W6?', 'W6NC', 'NYC'.</li>
-            <li data-i18n="help.step2List.2">Note that more than one station may reply if they match your partial pattern!</li>
-            <li data-i18n="help.step2List.3">Send "QRS" to have the last responding stations slow down by adding 6 WPM to their Farnsworth spacing.</li>
-          </ul>
-        </div>
+            <!-- Step 2 -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.step2Title">Enter the callsign</h6>
+              <p data-i18n="help.step2Text">
+                Enter the callsign of the station you'd like to work.
+              </p>
+              <ul>
+                <li data-i18n="help.step2List.0">
+                  Send 'AGN', 'AGN?', or '?' to request all stations to repeat
+                  themselves.
+                </li>
+                <li data-i18n="help.step2List.1">
+                  Use partial matches to single out stations in a pileup. E.g.,
+                  for W6NYC, all of the following will get a reply back: 'W?',
+                  'W6?', 'W6NC', 'NYC'.
+                </li>
+                <li data-i18n="help.step2List.2">
+                  Note that more than one station may reply if they match your
+                  partial pattern!
+                </li>
+                <li data-i18n="help.step2List.3">
+                  Send "QRS" to have the last responding stations slow down by
+                  adding 6 WPM to their Farnsworth spacing.
+                </li>
+              </ul>
+            </div>
 
-        <!-- Step 3 -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.step3Title">Click "Send"</h6>
-          <p data-i18n="help.step3Text">Click "Send" to transmit whatever you've entered in the Response text field. Use this to respond to a station.</p>
-        </div>
+            <!-- Step 3 -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.step3Title">Click "Send"</h6>
+              <p data-i18n="help.step3Text">
+                Click "Send" to transmit whatever you've entered in the Response
+                text field. Use this to respond to a station.
+              </p>
+            </div>
 
-        <!-- Step 4 -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.step4Title">Fill in mode-specific fields</h6>
-          <p data-i18n="help.step4Text">These mode-specific fields appear when you need to enter extra details, such as a name, state, or a contest serial number. Filling these in are completely optional before clicking "TU".</p>
-        </div>
+            <!-- Step 4 -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.step4Title">Fill in mode-specific fields</h6>
+              <p data-i18n="help.step4Text">
+                These mode-specific fields appear when you need to enter extra
+                details, such as a name, state, or a contest serial number.
+                Filling these in are completely optional before clicking "TU".
+              </p>
+            </div>
 
-        <!-- Step 5 -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.step5Title">Click "TU"</h6>
-          <p data-i18n="help.step5Text">After completing an exchange, click "TU" to send a wrap-up, thank you message. Each mode has a slightly different way of completing. After clicking TU, new stations sometimes hop in! But, in case they don't, you can always go back and click CQ.</p>
-        </div>
+            <!-- Step 5 -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.step5Title">Click "TU"</h6>
+              <p data-i18n="help.step5Text">
+                After completing an exchange, click "TU" to send a wrap-up,
+                thank you message. Each mode has a slightly different way of
+                completing. After clicking TU, new stations sometimes hop in!
+                But, in case they don't, you can always go back and click CQ.
+              </p>
+            </div>
 
-        <!-- Stop -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.stopTitle">Stop</h6>
-          <p data-i18n="help.stopText">Halts the current transmission or activity.</p>
-        </div>
+            <!-- Stop -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.stopTitle">Stop</h6>
+              <p data-i18n="help.stopText">
+                Halts the current transmission or activity.
+              </p>
+            </div>
 
-        <!-- Reset -->
-        <div class="help-step mb-4">
-          <h6 data-i18n="help.resetTitle">Reset</h6>
-          <p data-i18n="help.resetText">Clears all entries and starts you fresh, ready to begin a new contact sequence.</p>
+            <!-- Reset -->
+            <div class="help-step mb-4">
+              <h6 data-i18n="help.resetTitle">Reset</h6>
+              <p data-i18n="help.resetText">
+                Clears all entries and starts you fresh, ready to begin a new
+                contact sequence.
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              data-i18n="close"
+            >
+              Close
+            </button>
+          </div>
         </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
       </div>
     </div>
-  </div>
-</div>
 
     <hr />
 
@@ -1130,20 +1215,35 @@
       </tbody>
     </table>
 
-  <!-- Footer -->
-  <footer class="mt-5 py-3" style="background-color: #343a40;">
-    <div class="container text-center">
-      <p class="mb-0" style="color: #adb5bd;">
-        Crafted with 🧡 and "·-" by 
-        <a href="https://qrz.com/db/W6NYC" target="_blank" style="color: #ffc107; text-decoration: none;">W6NYC</a>
-        | Enhanced by 
-        <a href="https://qrz.com/db/R9OGL" target="_blank" style="color: #17a2b8; text-decoration: none;">R9OGL</a>
-        | Check out 
-        <a href="https://github.com/sc0tfree/morsewalker" target="_blank" style="color: #66d9ef; text-decoration: none;">the source code</a>!
-      </p>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="mt-5 py-3" style="background-color: #343a40">
+      <div class="container text-center">
+        <p class="mb-0" style="color: #adb5bd">
+          Crafted with 🧡 and "·-" by
+          <a
+            href="https://qrz.com/db/W6NYC"
+            target="_blank"
+            style="color: #ffc107; text-decoration: none"
+            >W6NYC</a
+          >
+          | Enhanced by
+          <a
+            href="https://qrz.com/db/R9OGL"
+            target="_blank"
+            style="color: #17a2b8; text-decoration: none"
+            >R9OGL</a
+          >
+          | Check out
+          <a
+            href="https://github.com/sc0tfree/morsewalker"
+            target="_blank"
+            style="color: #66d9ef; text-decoration: none"
+            >the source code</a
+          >!
+        </p>
+      </div>
+    </footer>
     <!-- Локализация -->
-  <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
