@@ -8,6 +8,23 @@
   <strong>CW Training Simulator with Russian Language Support</strong>
 </p>
 
+<p align="center">
+  <a href="https://morse.r9o.ru" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Live_Demo-Beta_Testing-blue?style=for-the-badge" alt="Live Demo"/>
+  </a>
+  <a href="https://morse.r9o.ru" target="_blank">
+    <img src="https://img.shields.io/badge/Status-Beta-yellow?style=for-the-badge" alt="Beta Status"/>
+  </a>
+</p>
+
+---
+
+## 🚀 **Try it Now!**
+
+**Live Beta Version:** **[https://morse.r9o.ru](https://morse.r9o.ru)** 🎵
+
+> ⚠️ **Currently in Beta Testing** - Your feedback is invaluable! Please report any bugs or suggestions.
+
 ---
 
 ## 🌟 Enhanced Features
