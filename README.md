@@ -1,70 +1,184 @@
-<h1>
-Morse Walker
-<img
-    src="./src/img/morsewalker-logo.png"
-    alt="Morse Walker logo"
-    style="vertical-align: top;"
-    height="40" />
-</h1>
+# Morse Walker - Russian Edition 🇷🇺
 
-Morse Walker is a web-based CW pileup training application inspired by VE3NEA's Morse Runner.
-This tool allows amateur radio operators to practice different contesting and activation scenarios,
-improve their pileup handling skills, and enhance their overall proficiency in CW.
+<p align="center">
+  <img src="src/img/morsewalker-logo.png" alt="Morse Walker Logo" width="200"/>
+</p>
 
-**Visit [MorseWalker.com](https://morsewalker.com) to start practicing your CW pileup skills!**
+<p align="center">
+  <strong>CW Training Simulator with Russian Language Support</strong>
+</p>
 
-### Supported Modes
+---
 
-- Single Caller - only one station responding at a time.
-- Basic Contest - exchange callsign and serial number.
-- POTA Activator - exchange callsign and state in a POTA-style format.
-- CW Ops Test (CWT) - exchange callsign, name and CW Ops number in the CWT QSO format.
-- K1USN SST - exchange callsign, name, and state in the SST QSO format.
+## 🌟 Enhanced Features
 
-### How to "Cheat"
+This is an enhanced version of Morse Walker with:
 
-To help you get started, or to diagnose software issues, Morse Walker includes a "cheat" mode that displays the callsign
-and other information of the responding stations. To see
-this, [open your browser's JavaScript console](https://help.lucid.co/hc/en-us/articles/360049395772-Troubleshooting-Open-the-JavaScript-Console).
+- 🇷🇺 **Full Russian language support** (EN/RU switcher)
+- 📻 **RDA Contest mode** with 85 Russian regions
+- 🎯 **500+ Russian callsigns** generator
+- 🇷🇺 **Russian Only Callsigns** option
+- 📖 **Translated Help modal**
+- 🎨 **Improved UI** with language switcher
 
-## How it Works
+**Original by** [W6NYC](https://github.com/sc0tfree/morsewalker)  
+**Enhanced by** [R9OGL](https://qrz.com/db/R9OGL)
 
-Morse Walker leverages the Web Audio API to generate realistic CW tones. It generates randomized station objects, each
-containing its own cw player (with unique wpm, tone, and volume) that is driven by an `OscillatorNode` within a shared
-`AudioContext`. A `GainNode` is added to simulate optional QSB, which is controlled via depth, frequency, and randomized
-phase offsets for natural variation. The volumes of grouped oscillators (i.e., responding stations in a pileup) are
-normalized to prevent audio popping. The shared `AudioContext` allows fore more efficient resource management, enabling
-multiple stations to play simultaneously without any significant performance degradation.
+---
 
-View the JSDocs at https://morsewalker.com/docs.
+## 🚀 What is Morse Walker?
 
-## Local Development
+Morse Walker is a web-based Morse code training simulator that helps you improve your CW skills through realistic contest scenarios. Practice copying callsigns, exchanges, and handling pile-ups just like in real contests!
 
-### Prerequisites
+### Original Features:
+- ✅ Multiple contest modes (CWT, SST, Basic Contest, POTA)
+- ✅ Adjustable speed (WPM) and Farnsworth spacing
+- ✅ Realistic QSB and QRN effects
+- ✅ Variable tones and volumes
+- ✅ Cut numbers support
+- ✅ US callsign database
 
-- Node.js and npm
-- A modern web browser
+### New in Russian Edition:
+- ✅ **RDA Contest mode** with authentic Russian region codes (AL-01, BA-23, etc.)
+- ✅ **Russian callsign generator** with realistic prefixes (R, UA, RA, RU, etc.)
+- ✅ **Bilingual interface** - switch between English and Russian instantly
+- ✅ **Localized Help system** with Russian instructions
+- ✅ **Beta warning banner** with bug reporting options
 
-### Installation
+---
 
-1. Clone the repository: `git clone https://github.com/sc0tfree/morsewalker.git && cd morsewalker`
-1. Install dependencies: `npm install`
-1. Start the development server: `npm start`
+## 🎮 How to Use
 
-This will open the application in your default browser.
+1. **Select a mode** (Single Caller, Contest, POTA, RDA, CWT, SST)
+2. **Configure your station** (callsign, speed, tone)
+3. **Click CQ** to start calling
+4. **Type the callsign** of the station you want to work
+5. **Fill in exchange fields** (name, state, serial number)
+6. **Click Send** to respond
+7. **Click TU** to complete the QSO
 
-#### Building for Production
+### RDA Mode Special:
+- Russian stations will send their RDA region (e.g., "R3ABC AL-23")
+- Respond with your region code
+- Track your RDA progress!
 
-To build the project for production, run: `npm run build`
+---
 
-The build files will be located in the `dist` directory.
+## 🌐 Language Switching
 
-# Feedback and Contributions
+Click **EN** or **RU** buttons in the top-right corner to switch interface language.
 
-Morse Walker is currently in beta, and your feedback is invaluable!
+All elements are translated:
+- Mode names and descriptions
+- Form labels and placeholders
+- Button texts
+- Help modal content
+- Results table headers
 
-If you encounter any bugs or have feature requests,
-[submit a GitHub issue](https://github.com/sc0tfree/morsewalker/issues/new/choose),
-or email me at [henry@w6nyc.com](mailto:henry@w6nyc.com).
+---
 
-Or, if you're feeling adventurous, fork the repository and submit a pull request!
+## 🛠️ Installation
+
+### Online Version
+Visit: **[https://loloka.github.io/morsewalker](https://loloka.github.io/morsewalker)**
+
+### Local Development
+
+```bash
+# Clone the repository
+git clone https://github.com/loloka/morsewalker.git
+cd morsewalker
+
+# Install dependencies
+npm install
+
+# Run development server
+npm start
+
+# Build for production
+npm run build
+
+
+📁 Project Structure
+morsewalker/
+├── src/
+│   ├── localization/          # 🆕 Localization system
+│   │   ├── index.js          # LocalizationManager
+│   │   ├── en.js             # English translations
+│   │   └── ru.js             # Russian translations
+│   ├── data/
+│   │   └── russianCallsigns.js  # 🆕 500+ Russian callsigns
+│   ├── js/
+│   │   ├── app.js            # Main application
+│   │   ├── modes.js          # Contest modes logic
+│   │   ├── rda-regions.js    # 🆕 85 RDA regions
+│   │   └── stationGenerator.js
+│   ├── css/
+│   │   ├── style.css
+│   │   └── language-switcher.css  # 🆕 Language buttons
+│   └── index.html
+└── dist/                     # Built files
+
+files
+🐛 Bug Reports & Feedback
+This project is in beta and your feedback is invaluable!
+
+Report Issues:
+GitHub Issues: https://github.com/sc0tfree/morsewalker/issues/new/choose
+Email (Original): henry@w6nyc.com
+Email (Russian version): admin@r9o.ru
+What to Report:
+🐛 Bugs or errors
+💡 Feature requests
+🌐 Translation improvements
+📻 RDA mode suggestions
+🤝 Contributing
+Contributions are welcome! If you'd like to improve Morse Walker:
+
+Fork the repository
+Create a feature branch (git checkout -b feature/amazing-feature)
+Commit your changes (git commit -m 'Add amazing feature')
+Push to the branch (git push origin feature/amazing-feature)
+Open a Pull Request
+📜 License
+This project is based on Morse Walker by W6NYC.
+
+🙏 Credits
+Original Author: W6NYC (Henry) - Created Morse Walker
+Russian Enhancement: R9OGL - Added Russian localization and RDA mode
+RDA Database: Russian District Award
+Callsign Data: Various amateur radio databases
+
+📊 Technical Details
+Technologies Used:
+Vanilla JavaScript (ES6+)
+Web Audio API for Morse code generation
+Bootstrap 5 for UI
+Webpack for bundling
+Prettier for code formatting
+
+Browser Support:
+Chrome/Edge (recommended)
+Firefox
+Safari
+Opera
+
+Features:
+Localization: Full i18n system with hot-swapping
+Audio Engine: Real-time Morse code synthesis
+State Management: LocalStorage for settings persistence
+QSB/QRN Effects: Realistic propagation simulation
+
+🔗 Links
+Original Project: https://github.com/sc0tfree/morsewalker
+Russian Fork: https://github.com/loloka/morsewalker
+W6NYC QRZ: https://qrz.com/db/W6NYC
+R9OGL QRZ: https://qrz.com/db/R9OGL
+
+📸 Screenshots
+
+...
+
+73 de W6NYC & R9OGL
+Crafted with 🧡 and "·-"
+
