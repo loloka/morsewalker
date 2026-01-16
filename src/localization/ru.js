@@ -40,7 +40,7 @@ export const ru = {
     russianOnly: 'Только РФ позывные',
   },
   effects: {
-    title: 'Настройки эффектов',
+    title: 'Настройки эффектов(шумов)',
     qrn: 'QRN (Атмосферные помехи)',
     qsb: 'QSB (Замирания)',
     stationsWithQSB: 'Станций с QSB',
