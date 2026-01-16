@@ -35,26 +35,29 @@ function getDOMInputs() {
       .value.trim()
       .toUpperCase(),
     yourName: document.getElementById('yourName').value.trim(),
-    yourState: document.getElementById('yourState').value.trim().toUpperCase(), // Convert to uppercase for consistency
+    yourState: document.getElementById('yourState').value.trim().toUpperCase(),
     yourSpeed: parseInt(document.getElementById('yourSpeed').value, 10),
     yourSidetone: parseInt(document.getElementById('yourSidetone').value, 10),
-    // convert volume to a float between 0 and 1
     yourVolume: parseFloat(document.getElementById('yourVolume').value) / 100,
     maxStations: parseInt(document.getElementById('maxStations').value, 10),
     minSpeed: parseInt(document.getElementById('minSpeed').value, 10),
     maxSpeed: parseInt(document.getElementById('maxSpeed').value, 10),
     minTone: parseInt(document.getElementById('minTone').value, 10),
     maxTone: parseInt(document.getElementById('maxTone').value, 10),
-    // convert volumes to a float between 0 and 1
     minVolume: parseFloat(document.getElementById('minVolume').value) / 100,
     maxVolume: parseFloat(document.getElementById('maxVolume').value) / 100,
     minWait: parseFloat(document.getElementById('minWait').value),
     maxWait: parseFloat(document.getElementById('maxWait').value),
 
-    // Checkboxes & Radio
+    // 🇺🇸 🇷🇺 Checkboxes для типа позывных
     usOnly: document.getElementById('usOnly')
       ? document.getElementById('usOnly').checked
       : false,
+    russianOnly: document.getElementById('russianOnly')
+      ? document.getElementById('russianOnly').checked
+      : false,
+    
+    // Effects
     qrn: document.querySelector('input[name="qrn"]:checked').value,
     qsb: document.getElementById('qsb').checked,
     qsbPercentage: parseInt(document.getElementById('qsbPercentage').value, 10),
@@ -105,18 +108,16 @@ function validateInputs(inputs) {
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
-  if (!inputs.yourName && inputs.mode === 'sst') {
-    markFieldInvalid('yourName', 'Your name is required for SST mode.');
+  if (!inputs.yourName && (inputs.mode === 'sst' || inputs.mode === 'cwt')) {
+    markFieldInvalid(
+      'yourName',
+      `Your name is required for ${inputs.mode.toUpperCase()} mode.`
+    );
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
   if (!inputs.yourState && inputs.mode === 'sst') {
     markFieldInvalid('yourState', 'Your state is required for SST mode.');
-    openAccordionSection('collapseYourStationSettings');
-    isValid = false;
-  }
-  if (!inputs.yourName && inputs.mode === 'cwt') {
-    markFieldInvalid('yourName', 'Your name is required for CWT mode.');
     openAccordionSection('collapseYourStationSettings');
     isValid = false;
   }
@@ -134,15 +135,6 @@ function validateInputs(inputs) {
     markFieldInvalid(
       'minVolume',
       'Minimum Volume cannot be greater than Maximum Volume!'
-    );
-    openAccordionSection('collapseRespondingStationSettings');
-    isValid = false;
-  }
-
-  if (inputs.minSpeed > inputs.maxSpeed) {
-    markFieldInvalid(
-      'minSpeed',
-      'Minimum Speed cannot be greater than Maximum Speed!'
     );
     openAccordionSection('collapseRespondingStationSettings');
     isValid = false;
@@ -166,7 +158,6 @@ function markFieldInvalid(inputId, errorMessage) {
 
   input.classList.add('is-invalid');
 
-  // If there's an associated invalid-feedback element, update its text
   const feedback = input.parentElement.querySelector('.invalid-feedback');
   if (feedback) {
     feedback.textContent = errorMessage;
@@ -194,7 +185,6 @@ function clearFieldInvalid(inputId) {
  * the visual state of the form.
  */
 export function clearAllInvalidStates() {
-  // Target all elements with the .is-invalid class
   document
     .querySelectorAll('.is-invalid')
     .forEach((el) => el.classList.remove('is-invalid'));
@@ -211,7 +201,6 @@ export function clearAllInvalidStates() {
 function openAccordionSection(sectionId) {
   const section = document.getElementById(sectionId);
   if (section && !section.classList.contains('show')) {
-    // Programmatically toggle the collapse
     let bsCollapse = bootstrap.Collapse.getInstance(section);
     if (!bsCollapse) {
       bsCollapse = new bootstrap.Collapse(section, { toggle: false });
@@ -263,30 +252,14 @@ function getSelectedFormats() {
 function getSelectedCutNumbers() {
   const cutMap = {};
 
-  if (document.getElementById('cutT')?.checked) {
-    cutMap['0'] = 'T';
-  }
-  if (document.getElementById('cutA')?.checked) {
-    cutMap['1'] = 'A';
-  }
-  if (document.getElementById('cutU')?.checked) {
-    cutMap['2'] = 'U';
-  }
-  if (document.getElementById('cutV')?.checked) {
-    cutMap['3'] = 'V';
-  }
-  if (document.getElementById('cutE')?.checked) {
-    cutMap['5'] = 'E';
-  }
-  if (document.getElementById('cutG')?.checked) {
-    cutMap['7'] = 'G';
-  }
-  if (document.getElementById('cutD')?.checked) {
-    cutMap['8'] = 'D';
-  }
-  if (document.getElementById('cutN')?.checked) {
-    cutMap['9'] = 'N';
-  }
+  if (document.getElementById('cutT')?.checked) cutMap['0'] = 'T';
+  if (document.getElementById('cutA')?.checked) cutMap['1'] = 'A';
+  if (document.getElementById('cutU')?.checked) cutMap['2'] = 'U';
+  if (document.getElementById('cutV')?.checked) cutMap['3'] = 'V';
+  if (document.getElementById('cutE')?.checked) cutMap['5'] = 'E';
+  if (document.getElementById('cutG')?.checked) cutMap['7'] = 'G';
+  if (document.getElementById('cutD')?.checked) cutMap['8'] = 'D';
+  if (document.getElementById('cutN')?.checked) cutMap['9'] = 'N';
 
   return cutMap;
 }

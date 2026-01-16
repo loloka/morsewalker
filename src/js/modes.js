@@ -34,6 +34,17 @@ export const modeUIConfig = {
     extraColumnHeader: 'State',
     resultsHeader: 'POTA Mode Results',
   },
+  // 🇷🇺 RDA Mode Configuration
+  rda: {
+    showTuButton: true,
+    showInfoField: true,
+    infoFieldPlaceholder: 'RDA Region / Serial No.',
+    showInfoField2: false,
+    infoField2Placeholder: '',
+    tableExtraColumn: true,
+    extraColumnHeader: 'RDA / Serial',
+    resultsHeader: 'RDA Mode Results',
+  },
   sst: {
     showTuButton: true,
     showInfoField: true,
@@ -58,7 +69,7 @@ export const modeUIConfig = {
 
 /**
  * modeLogicConfig centralizes the message construction logic for various modes.
- * Each mode’s functions define how CQ calls, exchanges, and final messages are generated,
+ * Each mode's functions define how CQ calls, exchanges, and final messages are generated,
  * removing the need for conditional branching (e.g., if/else statements) elsewhere.
  * Instead of embedding placeholders, these functions use template literals and accept
  * the necessary parameters directly.
@@ -96,6 +107,23 @@ export const modeLogicConfig = {
     showTuStep: true,
     modeName: 'POTA',
     extraInfoFieldKey: 'state',
+    extraInfoFieldKey2: null,
+  },
+  // 🇷🇺 RDA Mode Logic Configuration - ОБНОВЛЕНО!
+  rda: {
+    cqMessage: (yourStation, theirStation, arbitrary) =>
+      `CQ RDA DE ${yourStation.callsign}`,
+    yourExchange: (yourStation, theirStation, arbitrary) => `UR 5NN <BK>`,
+    theirExchange: (yourStation, theirStation, arbitrary) =>
+      `<BK> UR 5NN ${theirStation.rdaRegion} ${theirStation.rdaRegion} <BK>`,
+    yourSignoff: (yourStation, theirStation, arbitrary) =>
+      `<BK> TU ${arbitrary} 73 EE`,
+    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
+    requiresInfoField: true,
+    requiresInfoField2: false,
+    showTuStep: true,
+    modeName: 'RDA',
+    extraInfoFieldKey: 'rdaRegion',  // ← ИЗМЕНЕНО с 'state' на 'rdaRegion'
     extraInfoFieldKey2: null,
   },
   contest: {
