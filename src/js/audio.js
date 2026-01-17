@@ -108,6 +108,7 @@ export function createMorsePlayer(station, volumeOverride = null) {
     ',': '--..--',
     '?': '..--..',
     '/': '-..-.',
+    '-': '-....-',
     // Prosigns
     '<bk>': '-...-.-',
     '<ar>': '.-.-.',

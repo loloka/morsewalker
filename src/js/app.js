@@ -299,19 +299,19 @@ function applyModeSettings(mode) {
     console.error(
       `❌ Mode "${mode}" not found in modes. Defaulting to "single".`
     );
-    
+
     // Если уже пытаемся применить 'single' — останавливаем рекурсию
     if (mode === 'single') {
       console.error('❌ CRITICAL: "single" mode not found! Check modes.js');
       return;
     }
-    
+
     currentMode = 'single';
     const singleRadio = document.querySelector(
       'input[name="mode"][value="single"]'
     );
     if (singleRadio) singleRadio.checked = true;
-    
+
     // Рекурсивно применяем 'single'
     applyModeSettings('single');
     return;
@@ -367,54 +367,52 @@ function applyModeSettings(mode) {
   });
 }
 
-
-  // 🆕 Если режим RDA — включить Russian Only
-  if (mode === 'rda') {
-    const russianOnlyCheckbox = document.getElementById('russianOnly');
-    if (russianOnlyCheckbox && !russianOnlyCheckbox.checked) {
-      russianOnlyCheckbox.checked = true;
-      console.log('✅ Russian Only enabled for RDA mode');
-    }
+// 🆕 Если режим RDA — включить Russian Only
+if (mode === 'rda') {
+  const russianOnlyCheckbox = document.getElementById('russianOnly');
+  if (russianOnlyCheckbox && !russianOnlyCheckbox.checked) {
+    russianOnlyCheckbox.checked = true;
+    console.log('✅ Russian Only enabled for RDA mode');
   }
+}
 
-  const tuButton = document.getElementById('tuButton');
-  const infoField = document.getElementById('infoField');
-  const infoField2 = document.getElementById('infoField2');
-  const resultsTable = document.getElementById('resultsTable');
-  const modeResultsHeader = document.getElementById('modeResultsHeader');
+const tuButton = document.getElementById('tuButton');
+const infoField = document.getElementById('infoField');
+const infoField2 = document.getElementById('infoField2');
+const resultsTable = document.getElementById('resultsTable');
+const modeResultsHeader = document.getElementById('modeResultsHeader');
 
-  tuButton.style.display = config.showTuButton ? 'inline-block' : 'none';
+tuButton.style.display = config.showTuButton ? 'inline-block' : 'none';
 
-  if (config.showInfoField) {
-    infoField.style.display = 'inline-block';
-    infoField.placeholder = config.infoFieldPlaceholder;
-  } else {
-    infoField.style.display = 'none';
-    infoField.value = '';
-  }
+if (config.showInfoField) {
+  infoField.style.display = 'inline-block';
+  infoField.placeholder = config.infoFieldPlaceholder;
+} else {
+  infoField.style.display = 'none';
+  infoField.value = '';
+}
 
-  if (config.showInfoField2) {
-    infoField2.style.display = 'inline-block';
-    infoField2.placeholder = config.infoField2Placeholder;
-  } else {
-    infoField2.style.display = 'none';
-    infoField2.value = '';
-  }
+if (config.showInfoField2) {
+  infoField2.style.display = 'inline-block';
+  infoField2.placeholder = config.infoField2Placeholder;
+} else {
+  infoField2.style.display = 'none';
+  infoField2.value = '';
+}
 
-  modeResultsHeader.textContent = config.resultsHeader;
+modeResultsHeader.textContent = config.resultsHeader;
 
-  const extraColumns = resultsTable.querySelectorAll('.mode-specific-column');
-  extraColumns.forEach((col) => {
-    col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
-  });
+const extraColumns = resultsTable.querySelectorAll('.mode-specific-column');
+extraColumns.forEach((col) => {
+  col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
+});
 
-  const extraColumnHeaders = resultsTable.querySelectorAll(
-    'thead .mode-specific-column'
-  );
-  extraColumnHeaders.forEach((header) => {
-    header.textContent = config.extraColumnHeader || 'Additional Info';
-  });
-
+const extraColumnHeaders = resultsTable.querySelectorAll(
+  'thead .mode-specific-column'
+);
+extraColumnHeaders.forEach((header) => {
+  header.textContent = config.extraColumnHeader || 'Additional Info';
+});
 
 function resetGameState() {
   currentStations = [];
@@ -724,7 +722,7 @@ function send() {
         ''
       );
 
-            nextSingleStation(theirResponseTimer2);
+      nextSingleStation(theirResponseTimer2);
       return;
     } else if (compareResult === 'partial') {
       currentStationAttempts++;
@@ -816,6 +814,12 @@ function tu() {
       ? ` / ${currentStation.farnsworthSpeed}`
       : '');
 
+  // 🆕 Для RDA показываем регион, для остальных — extraInfo
+  let displayInfo = extraInfo;
+  if (currentMode === 'rda' && currentStation.rdaRegion) {
+    displayInfo = `🇷🇺 ${currentStation.rdaRegion}`;
+  }
+
   addTableRow(
     'resultsTable',
     totalContacts,
@@ -823,18 +827,32 @@ function tu() {
     wpmString,
     currentStationAttempts,
     audioContext.currentTime - currentStationStartTime,
-    extraInfo
+    displayInfo  // ✅ Теперь показывает TL-27 вместо (UNDEFINED)
   );
 
-  // 🏆 Calculate Score
+
+  // 🏆 Calculate Score with validation
   const qso = {
-    callsign: currentStation.callsign,
-    region: currentStation.region || currentStation.state,
-    state: currentStation.state,
-  };
-  
-  scoringSystem.addQSO(currentMode, qso);
-  updateScoreboard();
+  callsign: currentStation.callsign,
+  // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
+  region: currentStation.rdaRegion || currentStation.state,
+  state: currentStation.state,
+};
+
+  // 🐛 DEBUG: Показываем, что отправляем
+  console.log('📤 Отправка в scoringSystem:', {
+    mode: currentMode,
+    qso: qso
+  });
+
+  // ✅ Защита от ошибок
+  try {
+    scoringSystem.addQSO(currentMode, qso);
+    updateScoreboard();
+  } catch (error) {
+    console.error('❌ Ошибка при добавлении QSO:', error);
+    // Программа продолжит работу, даже если scoring сломается
+  }
 
   currentStations.splice(activeStationIndex, 1);
   activeStationIndex = null;
@@ -974,28 +992,45 @@ function reset() {
 /**
  * 📊 Update scoreboard display
  */
+/**
+ * 📊 Update scoreboard display
+ */
 function updateScoreboard() {
-  const finalScore = scoringSystem.getFinalScore();
-  
-  // Проверяем, существуют ли элементы scoreboard
-  const scoreQsos = document.getElementById('scoreQsos');
-  const scorePoints = document.getElementById('scorePoints');
-  const scoreMultipliers = document.getElementById('scoreMultipliers');
-  const scoreTotalScore = document.getElementById('scoreTotalScore');
-  const scoreAccuracy = document.getElementById('scoreAccuracy');
-  const scoreMistakes = document.getElementById('scoreMistakes');
-  const scoreDupes = document.getElementById('scoreDupes');
+  // 🛡️ Проверка: инициализирована ли система подсчёта?
+  if (!scoringSystem) {
+    console.warn('⚠️ scoringSystem ещё не создана');
+    return;
+  }
 
-  if (scoreQsos) scoreQsos.textContent = finalScore.qsos;
-  if (scorePoints) scorePoints.textContent = finalScore.points;
-  if (scoreMultipliers) scoreMultipliers.textContent = finalScore.multipliers;
-  if (scoreTotalScore) scoreTotalScore.textContent = finalScore.totalScore;
-  
-  const accuracy = finalScore.qsos > 0 
-    ? Math.round(((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100) 
-    : 100;
-  
-  if (scoreAccuracy) scoreAccuracy.textContent = accuracy + '%';
-  if (scoreMistakes) scoreMistakes.textContent = finalScore.mistakes;
-  if (scoreDupes) scoreDupes.textContent = finalScore.dupes;
-}
+  const finalScore = scoringSystem.getFinalScore();
+
+  // 🐛 DEBUG: Показываем счёт в консоли
+  console.log('📊 Обновление Scoreboard:', finalScore);
+
+  // 🛡️ Получаем все элементы с проверкой на существование
+  const elements = {
+    scoreQsos: document.getElementById('scoreQsos'),
+    scorePoints: document.getElementById('scorePoints'),
+    scoreMultipliers: document.getElementById('scoreMultipliers'),
+    scoreTotalScore: document.getElementById('scoreTotalScore'),
+    scoreAccuracy: document.getElementById('scoreAccuracy'),
+    scoreMistakes: document.getElementById('scoreMistakes'),
+    scoreDupes: document.getElementById('scoreDupes'),
+  };
+
+  // ✅ Обновляем только если элемент существует
+  if (elements.scoreQsos) elements.scoreQsos.textContent = finalScore.qsos;
+  if (elements.scorePoints) elements.scorePoints.textContent = finalScore.points;
+  if (elements.scoreMultipliers) elements.scoreMultipliers.textContent = finalScore.multipliers;
+  if (elements.scoreTotalScore) elements.scoreTotalScore.textContent = finalScore.totalScore;
+
+  // Рассчитываем точность
+  const accuracy =
+    finalScore.qsos > 0
+      ? Math.round(((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100)
+      : 100;
+
+  if (elements.scoreAccuracy) elements.scoreAccuracy.textContent = accuracy + '%';
+  if (elements.scoreMistakes) elements.scoreMistakes.textContent = finalScore.mistakes;
+  if (elements.scoreDupes) elements.scoreDupes.textContent = finalScore.dupes;
+} 

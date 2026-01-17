@@ -7,16 +7,18 @@ export const modes = {
       showInfoField: false,
       showInfoField2: false,
       tableExtraColumn: false,
-      resultsHeader: 'Single Caller Training'
+      resultsHeader: 'Single Caller Training',
     },
     logic: {
       showTuStep: false,
-      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} K`,
-      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.name} ${your.state}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ ${your.callsign} ${your.callsign} K`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} 599 ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) => `R 599 ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU ${their.name} 73`,
-      theirSignoff: (your, their, arb) => `73 ${your.callsign}`
-    }
+      theirSignoff: (your, their, arb) => `73 ${your.callsign}`,
+    },
   },
 
   contest: {
@@ -27,18 +29,21 @@ export const modes = {
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Serial',
-      resultsHeader: 'Contest Results'
+      resultsHeader: 'Contest Results',
     },
     logic: {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} TEST`,
-      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.serialNumber} ${your.name} ${your.state}`,
-      theirExchange: (your, their, arb) => `R 599 ${their.serialNumber} ${their.name} ${their.state}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} 599 ${your.serialNumber} ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) =>
+        `R 599 ${their.serialNumber} ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU`,
-      theirSignoff: (your, their, arb) => `TU ${your.callsign}`
-    }
+      theirSignoff: (your, their, arb) => `TU ${your.callsign}`,
+    },
   },
 
   pota: {
@@ -49,18 +54,19 @@ export const modes = {
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Park',
-      resultsHeader: 'POTA Activation Log'
+      resultsHeader: 'POTA Activation Log',
     },
     logic: {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'park',
-      cqMessage: (your, their, arb) => `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
       yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.state}`,
       theirExchange: (your, their, arb) => `R 599 ${their.park || 'K-1234'}`,
       yourSignoff: (your, their, arb) => `TU ${arb || 'K-1234'} 73`,
-      theirSignoff: (your, their, arb) => `73 ${your.callsign}`
-    }
+      theirSignoff: (your, their, arb) => `73 ${your.callsign}`,
+    },
   },
 
   rda: {
@@ -71,18 +77,20 @@ export const modes = {
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Region',
-      resultsHeader: 'RDA Contest Log'
+      resultsHeader: 'RDA Contest Log',
     },
     logic: {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'region',
-      cqMessage: (your, their, arb) => `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
-      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.region || 'MO-01'}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} 599 ${your.region || 'MO-01'}`,
       theirExchange: (your, their, arb) => `R 599 ${their.region}`,
       yourSignoff: (your, their, arb) => `TU ${arb || their.region} 73`,
-      theirSignoff: (your, their, arb) => `TU 73`
-    }
+      theirSignoff: (your, their, arb) => `TU 73`,
+    },
   },
 
   cwt: {
@@ -94,7 +102,7 @@ export const modes = {
       infoField2Placeholder: 'State/Province',
       tableExtraColumn: true,
       extraColumnHeader: 'Name / State',
-      resultsHeader: 'CWT Log'
+      resultsHeader: 'CWT Log',
     },
     logic: {
       showTuStep: true,
@@ -102,12 +110,14 @@ export const modes = {
       requiresInfoField2: true,
       extraInfoFieldKey: 'name',
       extraInfoFieldKey2: 'state',
-      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} TEST`,
-      yourExchange: (your, their, arb) => `${their.callsign} ${your.name} ${your.state}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) => `R ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU`,
-      theirSignoff: (your, their, arb) => `TU`
-    }
+      theirSignoff: (your, their, arb) => `TU`,
+    },
   },
 
   sst: {
@@ -118,18 +128,21 @@ export const modes = {
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Serial',
-      resultsHeader: 'SST Log'
+      resultsHeader: 'SST Log',
     },
     logic: {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) => `CQ CQ SST ${your.callsign} ${your.callsign} K`,
-      yourExchange: (your, their, arb) => `${their.callsign} ${your.serialNumber} ${your.name} ${your.state}`,
-      theirExchange: (your, their, arb) => `R ${their.serialNumber} ${their.name} ${their.state}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ SST ${your.callsign} ${your.callsign} K`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} ${your.serialNumber} ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) =>
+        `R ${their.serialNumber} ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU ${arb}`,
-      theirSignoff: (your, their, arb) => `TU`
-    }
+      theirSignoff: (your, their, arb) => `TU`,
+    },
   },
 
   hst: {
@@ -138,7 +151,7 @@ export const modes = {
       showInfoField: false,
       showInfoField2: false,
       tableExtraColumn: false,
-      resultsHeader: 'HST Championship'
+      resultsHeader: 'HST Championship',
     },
     logic: {
       showTuStep: false,
@@ -146,8 +159,8 @@ export const modes = {
       yourExchange: (your, their, arb) => `${their.callsign}`,
       theirExchange: (your, their, arb) => `R`,
       yourSignoff: (your, their, arb) => ``,
-      theirSignoff: (your, their, arb) => ``
-    }
+      theirSignoff: (your, their, arb) => ``,
+    },
   },
 
   wpx: {
@@ -158,19 +171,21 @@ export const modes = {
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Serial',
-      resultsHeader: 'WPX Contest Log'
+      resultsHeader: 'WPX Contest Log',
     },
     logic: {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) => `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
-      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.serialNumber}`,
+      cqMessage: (your, their, arb) =>
+        `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) =>
+        `${their.callsign} 599 ${your.serialNumber}`,
       theirExchange: (your, their, arb) => `R 599 ${their.serialNumber}`,
       yourSignoff: (your, their, arb) => `TU`,
-      theirSignoff: (your, their, arb) => `TU`
-    }
-  }
+      theirSignoff: (your, their, arb) => `TU`,
+    },
+  },
 };
 
 // Функция извлечения префикса для WPX
@@ -186,9 +201,9 @@ export function getMode(modeName) {
 
 // Экспорт списка режимов для UI
 export function getModeList() {
-  return Object.keys(modes).map(key => ({
+  return Object.keys(modes).map((key) => ({
     id: key,
-    name: modes[key].ui?.resultsHeader || key
+    name: modes[key].ui?.resultsHeader || key,
   }));
 }
 

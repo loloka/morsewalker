@@ -10,8 +10,8 @@ export const en = {
     rda: 'RDA Contest',
     cwt: 'CWT',
     k1usnSST: 'K1USN SST',
-    hst: 'HST',  // ← Добавлено
-    wpx: 'WPX',  // ← Добавлено
+    hst: 'HST', // ← Добавлено
+    wpx: 'WPX', // ← Добавлено
   },
   yourStation: {
     title: 'Your Station Settings',
@@ -73,7 +73,7 @@ export const en = {
     serialNumber: 'Serial Number',
     additionalInfo: 'Additional Info',
   },
-  
+
   // 🏆 New Scoreboard Section
   scoreboard: {
     title: 'Scoreboard',
@@ -85,12 +85,12 @@ export const en = {
     mistakes: 'Mistakes',
     dupes: 'Dupes',
   },
-  
+
   // 🎮 New Competition Section
   competition: {
     start: 'Start Competition Mode',
   },
-  
+
   betaWarning: {
     text: 'Morse Walker is currently in <strong>beta</strong> and <em>your feedback is invaluable!</em>',
     submitIssue: 'Submit an issue',

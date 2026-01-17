@@ -8,14 +8,20 @@ export class ScoringSystem {
     this.dupes = 0;
     this.mistakes = 0;
     this.workedCallsigns = new Set();
-    this.workedMultipliers = new Set(); // ✅ Set для уникальных мультипликаторов
+    this.workedMultipliers = new Set(); 
   }
 
   /**
    * ✅ Метод addQSO (требуется в app.js)
    */
   addQSO(mode, qso) {
-    const callsign = qso.callsign;
+  const callsign = qso.callsign;
+
+  // 🛡️ Проверка: есть ли позывной?
+  if (!callsign) {
+    console.error('❌ Ошибка: нет позывного', qso);
+    return;
+  }
 
     // Проверка на дубль
     if (this.workedCallsigns.has(callsign)) {
@@ -31,7 +37,9 @@ export class ScoringSystem {
     const qsoPoints = this.calculateScore(mode, qso);
     this.points += qsoPoints;
 
-    console.log(`✅ QSO: ${callsign} | Очки: ${this.points} | Мульты: ${this.multipliers}`);
+    console.log(
+      `✅ QSO: ${callsign} | Очки: ${this.points} | Мульты: ${this.multipliers}`
+    );
   }
 
   /**
@@ -52,6 +60,9 @@ export class ScoringSystem {
           this.workedMultipliers.add(qso.region);
           this.multipliers++;
           points += 3; // Бонус за новый регион
+          console.log(`✅ RDA: Новый регион ${qso.region} (+3 бонус)`);
+        } else {
+          console.log(`ℹ️ RDA: Регион ${qso.region} уже был`);
         }
         break;
 
@@ -64,13 +75,18 @@ export class ScoringSystem {
         break;
 
       case 'wpx':
-        points = 1;
-        const prefix = this.extractPrefix(qso.callsign);
-        if (!this.workedMultipliers.has(prefix)) {
-          this.workedMultipliers.add(prefix);
-          this.multipliers++;
-        }
-        break;
+      points = 1;
+      const prefix = this.extractPrefix(qso.callsign);
+      console.log(`🔍 WPX: Извлечён префикс "${prefix}" из ${qso.callsign}`);
+      
+      if (!this.workedMultipliers.has(prefix)) {
+        this.workedMultipliers.add(prefix);
+        this.multipliers++;
+        console.log(`✅ WPX: Новый префикс ${prefix} (мульт #${this.multipliers})`);
+      } else {
+        console.log(`ℹ️ WPX: Префикс ${prefix} уже был`);
+      }
+      break;
 
       default:
         points = 1;
