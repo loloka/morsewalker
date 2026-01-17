@@ -1,179 +1,202 @@
-/**
- * modeUIConfig defines the UI-related aspects of each mode, including whether
- * one or two info fields are displayed, their placeholders, and result headers.
- * Additionally, it specifies what the extra column header should be.
- */
-export const modeUIConfig = {
+// src/js/modes.js
+
+export const modes = {
   single: {
-    showTuButton: false,
-    showInfoField: false,
-    infoFieldPlaceholder: '',
-    showInfoField2: false,
-    infoField2Placeholder: '',
-    tableExtraColumn: false,
-    extraColumnHeader: '',
-    resultsHeader: 'Single Mode Results',
+    ui: {
+      showTuButton: false,
+      showInfoField: false,
+      showInfoField2: false,
+      tableExtraColumn: false,
+      resultsHeader: 'Single Caller Training'
+    },
+    logic: {
+      showTuStep: false,
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} K`,
+      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) => `R 599 ${their.name} ${their.state}`,
+      yourSignoff: (your, their, arb) => `TU ${their.name} 73`,
+      theirSignoff: (your, their, arb) => `73 ${your.callsign}`
+    }
   },
+
   contest: {
-    showTuButton: true,
-    showInfoField: true,
-    infoFieldPlaceholder: 'Serial Number',
-    showInfoField2: false,
-    infoField2Placeholder: '',
-    tableExtraColumn: true,
-    extraColumnHeader: 'Serial Number',
-    resultsHeader: 'Contest Mode Results',
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Serial Number',
+      showInfoField2: false,
+      tableExtraColumn: true,
+      extraColumnHeader: 'Serial',
+      resultsHeader: 'Contest Results'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      extraInfoFieldKey: 'serialNumber',
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.serialNumber} ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) => `R 599 ${their.serialNumber} ${their.name} ${their.state}`,
+      yourSignoff: (your, their, arb) => `TU`,
+      theirSignoff: (your, their, arb) => `TU ${your.callsign}`
+    }
   },
+
   pota: {
-    showTuButton: true,
-    showInfoField: true,
-    infoFieldPlaceholder: 'State',
-    showInfoField2: false,
-    infoField2Placeholder: '',
-    tableExtraColumn: true,
-    extraColumnHeader: 'State',
-    resultsHeader: 'POTA Mode Results',
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Park Reference (e.g., K-1234)',
+      showInfoField2: false,
+      tableExtraColumn: true,
+      extraColumnHeader: 'Park',
+      resultsHeader: 'POTA Activation Log'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      extraInfoFieldKey: 'park',
+      cqMessage: (your, their, arb) => `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
+      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.state}`,
+      theirExchange: (your, their, arb) => `R 599 ${their.park || 'K-1234'}`,
+      yourSignoff: (your, their, arb) => `TU ${arb || 'K-1234'} 73`,
+      theirSignoff: (your, their, arb) => `73 ${your.callsign}`
+    }
   },
-  // 🇷🇺 RDA Mode Configuration
+
   rda: {
-    showTuButton: true,
-    showInfoField: true,
-    infoFieldPlaceholder: 'RDA Region / Serial No.',
-    showInfoField2: false,
-    infoField2Placeholder: '',
-    tableExtraColumn: true,
-    extraColumnHeader: 'RDA / Serial',
-    resultsHeader: 'RDA Mode Results',
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Region (e.g., MO-01)',
+      showInfoField2: false,
+      tableExtraColumn: true,
+      extraColumnHeader: 'Region',
+      resultsHeader: 'RDA Contest Log'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      extraInfoFieldKey: 'region',
+      cqMessage: (your, their, arb) => `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.region || 'MO-01'}`,
+      theirExchange: (your, their, arb) => `R 599 ${their.region}`,
+      yourSignoff: (your, their, arb) => `TU ${arb || their.region} 73`,
+      theirSignoff: (your, their, arb) => `TU 73`
+    }
   },
-  sst: {
-    showTuButton: true,
-    showInfoField: true,
-    infoFieldPlaceholder: 'Name',
-    showInfoField2: true,
-    infoField2Placeholder: 'State',
-    tableExtraColumn: true,
-    extraColumnHeader: 'Additional Info',
-    resultsHeader: 'SST Mode Results',
-  },
+
   cwt: {
-    showTuButton: true,
-    showInfoField: true,
-    infoFieldPlaceholder: 'Name',
-    showInfoField2: true,
-    infoField2Placeholder: 'CW Ops No.',
-    tableExtraColumn: true,
-    extraColumnHeader: 'Additional Info',
-    resultsHeader: 'CWT Mode Results',
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Name',
+      showInfoField2: true,
+      infoField2Placeholder: 'State/Province',
+      tableExtraColumn: true,
+      extraColumnHeader: 'Name / State',
+      resultsHeader: 'CWT Log'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      requiresInfoField2: true,
+      extraInfoFieldKey: 'name',
+      extraInfoFieldKey2: 'state',
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) => `${their.callsign} ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) => `R ${their.name} ${their.state}`,
+      yourSignoff: (your, their, arb) => `TU`,
+      theirSignoff: (your, their, arb) => `TU`
+    }
   },
+
+  sst: {
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Serial Number',
+      showInfoField2: false,
+      tableExtraColumn: true,
+      extraColumnHeader: 'Serial',
+      resultsHeader: 'SST Log'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      extraInfoFieldKey: 'serialNumber',
+      cqMessage: (your, their, arb) => `CQ CQ SST ${your.callsign} ${your.callsign} K`,
+      yourExchange: (your, their, arb) => `${their.callsign} ${your.serialNumber} ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) => `R ${their.serialNumber} ${their.name} ${their.state}`,
+      yourSignoff: (your, their, arb) => `TU ${arb}`,
+      theirSignoff: (your, their, arb) => `TU`
+    }
+  },
+
+  hst: {
+    ui: {
+      showTuButton: false,
+      showInfoField: false,
+      showInfoField2: false,
+      tableExtraColumn: false,
+      resultsHeader: 'HST Championship'
+    },
+    logic: {
+      showTuStep: false,
+      cqMessage: (your, their, arb) => `${your.callsign}`,
+      yourExchange: (your, their, arb) => `${their.callsign}`,
+      theirExchange: (your, their, arb) => `R`,
+      yourSignoff: (your, their, arb) => ``,
+      theirSignoff: (your, their, arb) => ``
+    }
+  },
+
+  wpx: {
+    ui: {
+      showTuButton: true,
+      showInfoField: true,
+      infoFieldPlaceholder: 'Serial Number',
+      showInfoField2: false,
+      tableExtraColumn: true,
+      extraColumnHeader: 'Serial',
+      resultsHeader: 'WPX Contest Log'
+    },
+    logic: {
+      showTuStep: true,
+      requiresInfoField: true,
+      extraInfoFieldKey: 'serialNumber',
+      cqMessage: (your, their, arb) => `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
+      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.serialNumber}`,
+      theirExchange: (your, their, arb) => `R 599 ${their.serialNumber}`,
+      yourSignoff: (your, their, arb) => `TU`,
+      theirSignoff: (your, their, arb) => `TU`
+    }
+  }
 };
 
-/**
- * modeLogicConfig centralizes the message construction logic for various modes.
- * Each mode's functions define how CQ calls, exchanges, and final messages are generated,
- * removing the need for conditional branching (e.g., if/else statements) elsewhere.
- * Instead of embedding placeholders, these functions use template literals and accept
- * the necessary parameters directly.
- *
- * The extraInfoFieldKey and extraInfoFieldKey2 properties specify which callingStation
- * attributes are compared against the user's input during the TU step.
- */
+// Функция извлечения префикса для WPX
+export function extractPrefix(callsign) {
+  const match = callsign.match(/^[A-Z0-9]+\d/);
+  return match ? match[0] : callsign;
+}
 
-export const modeLogicConfig = {
-  single: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ DE ${yourStation.callsign} K`,
-    yourExchange: (yourStation, theirStation, arbitrary) => `5NN`,
-    theirExchange: (yourStation, theirStation, arbitrary) => `R 5NN TU`,
-    yourSignoff: (yourStation, theirStation, arbitrary) => `TU EE`,
-    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
-    requiresInfoField: false,
-    requiresInfoField2: false,
-    showTuStep: false,
-    modeName: 'Single',
-    extraInfoFieldKey: null,
-    extraInfoFieldKey2: null,
-  },
-  pota: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ POTA DE ${yourStation.callsign}`,
-    yourExchange: (yourStation, theirStation, arbitrary) => `UR 5NN <BK>`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `<BK> UR 5NN ${theirStation.state} ${theirStation.state} <BK>`,
-    yourSignoff: (yourStation, theirStation, arbitrary) =>
-      `<BK> TU ${arbitrary} 73 EE`,
-    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
-    requiresInfoField: true,
-    requiresInfoField2: false,
-    showTuStep: true,
-    modeName: 'POTA',
-    extraInfoFieldKey: 'state',
-    extraInfoFieldKey2: null,
-  },
-  // 🇷🇺 RDA Mode Logic Configuration - ОБНОВЛЕНО!
-  rda: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ RDA DE ${yourStation.callsign}`,
-    yourExchange: (yourStation, theirStation, arbitrary) => `UR 5NN <BK>`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `<BK> UR 5NN ${theirStation.rdaRegion} ${theirStation.rdaRegion} <BK>`,
-    yourSignoff: (yourStation, theirStation, arbitrary) =>
-      `<BK> TU ${arbitrary} 73 EE`,
-    theirSignoff: (yourStation, theirStation, arbitrary) => `EE`,
-    requiresInfoField: true,
-    requiresInfoField2: false,
-    showTuStep: true,
-    modeName: 'RDA',
-    extraInfoFieldKey: 'rdaRegion', // ← ИЗМЕНЕНО с 'state' на 'rdaRegion'
-    extraInfoFieldKey2: null,
-  },
-  contest: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ TEST DE ${yourStation.callsign}`,
-    yourExchange: (yourStation, theirStation, arbitrary) => `5NN`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `5NN ${theirStation.serialNumber} TU`,
-    yourSignoff: (yourStation, theirStation, arbitrary) =>
-      `TU ${yourStation.callsign}`,
-    theirSignoff: null,
-    requiresInfoField: true,
-    requiresInfoField2: false,
-    showTuStep: true,
-    modeName: 'Contest',
-    extraInfoFieldKey: 'serialNumber',
-    extraInfoFieldKey2: null,
-  },
-  sst: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ SST ${yourStation.callsign}`,
-    yourExchange: (yourStation, theirStation, arbitrary) =>
-      `${yourStation.name} ${yourStation.state}`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `TU ${yourStation.name} ${theirStation.name} ${theirStation.state}`,
-    yourSignoff: (yourStation, theirStation, arbitrary) =>
-      `GL ${arbitrary} TU ${yourStation.callsign} SST`,
-    theirSignoff: null,
-    requiresInfoField: true,
-    requiresInfoField2: true,
-    showTuStep: true,
-    modeName: 'SST',
-    extraInfoFieldKey: 'name',
-    extraInfoFieldKey2: 'state',
-  },
-  cwt: {
-    cqMessage: (yourStation, theirStation, arbitrary) =>
-      `CQ CWT ${yourStation.callsign}`,
-    yourExchange: (yourStation, theirStation, arbitrary) =>
-      `${yourStation.name} CWA`,
-    theirExchange: (yourStation, theirStation, arbitrary) =>
-      `${theirStation.name} ${theirStation.cwopsNumber} TU`,
-    yourSignoff: (yourStation, theirStation, arbitrary) =>
-      `TU ${yourStation.callsign}`,
-    theirSignoff: null,
-    requiresInfoField: true,
-    requiresInfoField2: true,
-    showTuStep: true,
-    modeName: 'CWT',
-    extraInfoFieldKey: 'name',
-    extraInfoFieldKey2: 'cwopsNumber',
-  },
-};
+// Функция получения режима
+export function getMode(modeName) {
+  return modes[modeName] || modes.single;
+}
+
+// Экспорт списка режимов для UI
+export function getModeList() {
+  return Object.keys(modes).map(key => ({
+    id: key,
+    name: modes[key].ui?.resultsHeader || key
+  }));
+}
+
+// Экспорт старых имён для обратной совместимости
+export const modeLogicConfig = Object.fromEntries(
+  Object.entries(modes).map(([key, value]) => [key, value.logic])
+);
+
+export const modeUIConfig = Object.fromEntries(
+  Object.entries(modes).map(([key, value]) => [key, value.ui])
+);

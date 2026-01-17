@@ -10,6 +10,10 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 // Import Font Awesome
 import '@fortawesome/fontawesome-free/js/all.min.js';
 
+// 🏆 Import Scoring and Hotkeys
+import { ScoringSystem } from './scoring.js';
+import { HotkeyManager } from './hotkeys.js';
+
 import {
   audioContext,
   createMorsePlayer,
@@ -35,13 +39,14 @@ import {
   resetRDASerialNumber,
 } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
-import { modeLogicConfig, modeUIConfig } from './modes.js';
+import { modes } from './modes.js';
 import { i18n } from '../localization/index.js';
 
 /**
  * Application state variables.
  */
 let currentMode;
+let scoringSystem; // 🏆 Добавлено
 let inputs = null;
 let currentStations = [];
 let currentStation = null;
@@ -58,6 +63,9 @@ const farnsworthLowerBy = 6;
  * Event listener setup.
  */
 document.addEventListener('DOMContentLoaded', () => {
+  // 🏆 Initialize Scoring System
+  scoringSystem = new ScoringSystem();
+
   // UI elements
   const cqButton = document.getElementById('cqButton');
   const responseField = document.getElementById('responseField');
@@ -75,8 +83,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const yourSidetone = document.getElementById('yourSidetone');
   const yourVolume = document.getElementById('yourVolume');
 
+  // ⌨️ Initialize Hotkey Manager
+  const hotkeyManager = new HotkeyManager({
+    cqButton,
+    sendButton,
+    tuButton,
+    stopButton,
+    resetButton,
+    responseField,
+  });
+
   // Language switcher initialization
-  i18n.setLanguage(i18n.currentLang); // Загружаем сохранённый язык
+  i18n.setLanguage(i18n.currentLang);
 
   document.getElementById('lang-en').addEventListener('click', () => {
     i18n.setLanguage('en');
@@ -148,14 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   updateResponsiveButtons();
   window.addEventListener('resize', updateResponsiveButtons);
-
-  // Hotkey for CQ (Ctrl + Shift + C)
-  document.addEventListener('keydown', (event) => {
-    if (event.ctrlKey && event.shiftKey && event.key === 'C') {
-      event.preventDefault();
-      cq();
-    }
-  });
 
   // Enter key handlers
   responseField.addEventListener('keydown', (event) => {
@@ -229,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Mode initialization
   const savedMode = localStorage.getItem('mode') || 'single';
-  const modeExists = modeUIConfig[savedMode] !== undefined;
+  const modeExists = modes[savedMode] !== undefined;
   const modeToUse = modeExists ? savedMode : 'single';
 
   const savedModeRadio = document.querySelector(
@@ -273,31 +283,41 @@ function updateLanguage(lang) {
  * Functions
  */
 function getModeConfig() {
-  const config = modeLogicConfig[currentMode];
+  const config = modes[currentMode]?.logic;
   if (!config) {
     console.error(
-      `❌ Mode "${currentMode}" not found in modeLogicConfig. Using "single".`
+      `❌ Mode "${currentMode}" not found in modes. Using "single".`
     );
-    return modeLogicConfig['single'];
+    return modes['single'].logic;
   }
   return config;
 }
 
 function applyModeSettings(mode) {
-  const config = modeUIConfig[mode];
-
-  if (!config) {
+  // 🔍 Проверяем, существует ли режим
+  if (!modes[mode]) {
     console.error(
-      `❌ Mode "${mode}" not found in modeUIConfig. Defaulting to "single".`
+      `❌ Mode "${mode}" not found in modes. Defaulting to "single".`
     );
+    
+    // Если уже пытаемся применить 'single' — останавливаем рекурсию
+    if (mode === 'single') {
+      console.error('❌ CRITICAL: "single" mode not found! Check modes.js');
+      return;
+    }
+    
     currentMode = 'single';
     const singleRadio = document.querySelector(
       'input[name="mode"][value="single"]'
     );
     if (singleRadio) singleRadio.checked = true;
+    
+    // Рекурсивно применяем 'single'
     applyModeSettings('single');
     return;
   }
+
+  const config = modes[mode].ui;
 
   // 🆕 Если режим RDA — включить Russian Only
   if (mode === 'rda') {
@@ -347,6 +367,55 @@ function applyModeSettings(mode) {
   });
 }
 
+
+  // 🆕 Если режим RDA — включить Russian Only
+  if (mode === 'rda') {
+    const russianOnlyCheckbox = document.getElementById('russianOnly');
+    if (russianOnlyCheckbox && !russianOnlyCheckbox.checked) {
+      russianOnlyCheckbox.checked = true;
+      console.log('✅ Russian Only enabled for RDA mode');
+    }
+  }
+
+  const tuButton = document.getElementById('tuButton');
+  const infoField = document.getElementById('infoField');
+  const infoField2 = document.getElementById('infoField2');
+  const resultsTable = document.getElementById('resultsTable');
+  const modeResultsHeader = document.getElementById('modeResultsHeader');
+
+  tuButton.style.display = config.showTuButton ? 'inline-block' : 'none';
+
+  if (config.showInfoField) {
+    infoField.style.display = 'inline-block';
+    infoField.placeholder = config.infoFieldPlaceholder;
+  } else {
+    infoField.style.display = 'none';
+    infoField.value = '';
+  }
+
+  if (config.showInfoField2) {
+    infoField2.style.display = 'inline-block';
+    infoField2.placeholder = config.infoField2Placeholder;
+  } else {
+    infoField2.style.display = 'none';
+    infoField2.value = '';
+  }
+
+  modeResultsHeader.textContent = config.resultsHeader;
+
+  const extraColumns = resultsTable.querySelectorAll('.mode-specific-column');
+  extraColumns.forEach((col) => {
+    col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
+  });
+
+  const extraColumnHeaders = resultsTable.querySelectorAll(
+    'thead .mode-specific-column'
+  );
+  extraColumnHeaders.forEach((header) => {
+    header.textContent = config.extraColumnHeader || 'Additional Info';
+  });
+
+
 function resetGameState() {
   currentStations = [];
   currentStation = null;
@@ -355,6 +424,10 @@ function resetGameState() {
   currentStationAttempts = 0;
   currentStationStartTime = null;
   totalContacts = 0;
+
+  // 🏆 Reset Scoring
+  scoringSystem = new ScoringSystem();
+  updateScoreboard();
 
   updateActiveStations(0);
   clearTable('resultsTable');
@@ -651,7 +724,7 @@ function send() {
         ''
       );
 
-      nextSingleStation(theirResponseTimer2);
+            nextSingleStation(theirResponseTimer2);
       return;
     } else if (compareResult === 'partial') {
       currentStationAttempts++;
@@ -752,6 +825,16 @@ function tu() {
     audioContext.currentTime - currentStationStartTime,
     extraInfo
   );
+
+  // 🏆 Calculate Score
+  const qso = {
+    callsign: currentStation.callsign,
+    region: currentStation.region || currentStation.state,
+    state: currentStation.state,
+  };
+  
+  scoringSystem.addQSO(currentMode, qso);
+  updateScoreboard();
 
   currentStations.splice(activeStationIndex, 1);
   activeStationIndex = null;
@@ -867,6 +950,10 @@ function reset() {
   // Reset RDA serial number for non-Russian stations
   resetRDASerialNumber();
 
+  // 🏆 Reset Scoring
+  scoringSystem = new ScoringSystem();
+  updateScoreboard();
+
   updateActiveStations(0);
   updateAudioLock(0);
   stopAllAudio();
@@ -882,4 +969,33 @@ function reset() {
   const modeConfig = getModeConfig();
   const cqButton = document.getElementById('cqButton');
   cqButton.disabled = false;
+}
+
+/**
+ * 📊 Update scoreboard display
+ */
+function updateScoreboard() {
+  const finalScore = scoringSystem.getFinalScore();
+  
+  // Проверяем, существуют ли элементы scoreboard
+  const scoreQsos = document.getElementById('scoreQsos');
+  const scorePoints = document.getElementById('scorePoints');
+  const scoreMultipliers = document.getElementById('scoreMultipliers');
+  const scoreTotalScore = document.getElementById('scoreTotalScore');
+  const scoreAccuracy = document.getElementById('scoreAccuracy');
+  const scoreMistakes = document.getElementById('scoreMistakes');
+  const scoreDupes = document.getElementById('scoreDupes');
+
+  if (scoreQsos) scoreQsos.textContent = finalScore.qsos;
+  if (scorePoints) scorePoints.textContent = finalScore.points;
+  if (scoreMultipliers) scoreMultipliers.textContent = finalScore.multipliers;
+  if (scoreTotalScore) scoreTotalScore.textContent = finalScore.totalScore;
+  
+  const accuracy = finalScore.qsos > 0 
+    ? Math.round(((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100) 
+    : 100;
+  
+  if (scoreAccuracy) scoreAccuracy.textContent = accuracy + '%';
+  if (scoreMistakes) scoreMistakes.textContent = finalScore.mistakes;
+  if (scoreDupes) scoreDupes.textContent = finalScore.dupes;
 }

@@ -7,9 +7,11 @@ export const en = {
     singleCaller: 'Single Caller',
     basicContest: 'Basic Contest',
     potaActivator: 'POTA Activator',
-    rda: 'RDA',
+    rda: 'RDA Contest',
     cwt: 'CWT',
     k1usnSST: 'K1USN SST',
+    hst: 'HST',  // ← Добавлено
+    wpx: 'WPX',  // ← Добавлено
   },
   yourStation: {
     title: 'Your Station Settings',
@@ -62,7 +64,7 @@ export const en = {
     serialNumber: 'Serial Number',
   },
   results: {
-    title: 'Contest Mode Results',
+    title: 'Contest Results',
     number: '#',
     callsign: 'Callsign',
     wpm: 'WPM',
@@ -71,55 +73,72 @@ export const en = {
     serialNumber: 'Serial Number',
     additionalInfo: 'Additional Info',
   },
+  
+  // 🏆 New Scoreboard Section
+  scoreboard: {
+    title: 'Scoreboard',
+    qsos: 'QSOs',
+    points: 'Points',
+    multipliers: 'Multipliers',
+    total: 'Total Score',
+    accuracy: 'Accuracy',
+    mistakes: 'Mistakes',
+    dupes: 'Dupes',
+  },
+  
+  // 🎮 New Competition Section
+  competition: {
+    start: 'Start Competition Mode',
+  },
+  
   betaWarning: {
     text: 'Morse Walker is currently in <strong>beta</strong> and <em>your feedback is invaluable!</em>',
     submitIssue: 'Submit an issue',
     forBugs: 'for bugs or feature requests, or email',
   },
   help: {
-    title: 'Начало работы',
-    cheatTitle: 'Как "подсмотреть"',
+    title: 'Getting Started',
+    cheatTitle: 'How to "Cheat"',
     cheatText:
-      'Если нужна небольшая помощь для начала, откройте консоль JavaScript в браузере, чтобы увидеть информацию за кулисами, например, какие станции вызывают вас.',
+      "If you feel like you need a little extra help to get started, open your browser's JavaScript console to see behind the scenes information, such as which stations are calling.",
 
-    step1Title: 'Нажмите "CQ" для начала вызова',
+    step1Title: 'Click "CQ" to start calling',
     step1Text:
-      'Ответят до "Макс. станций". Может начаться медленно, часто всего с одной или двумя станциями. Если хотите больше станций, просто вызовите CQ снова!',
+      'Up to your "Max Stations" will respond. It may start slowly, often with just one or two stations initially. If you want more stations, just call CQ again!',
 
-    step2Title: 'Введите позывной',
-    step2Text: 'Введите позывной станции, с которой хотите провести QSO.',
+    step2Title: 'Enter the callsign',
+    step2Text: "Enter the callsign of the station you'd like to work.",
     step2List: [
-      "Отправьте 'AGN', 'AGN?' или '?', чтобы попросить все станции повторить.",
-      "Используйте частичное совпадение для выделения станций в pile-up. Например, для W6NYC подойдут: 'W?', 'W6?', 'W6NC', 'NYC'.",
-      'Обратите внимание, что может ответить более одной станции, если они соответствуют вашему шаблону!',
-      'Отправьте "QRS", чтобы последние ответившие станции замедлились, добавив 6 WPM к интервалу Farnsworth.',
+      "Send 'AGN', 'AGN?', or '?' to request all stations to repeat themselves.",
+      "Use partial matches to single out stations in a pileup. E.g., for W6NYC, all of the following will get a reply back: 'W?', 'W6?', 'W6NC', 'NYC'.",
+      'Note that more than one station may reply if they match your partial pattern!',
+      'Send "QRS" to have the last responding stations slow down by adding 6 WPM to their Farnsworth spacing.',
     ],
 
-    step3Title: 'Нажмите "Отправить"',
+    step3Title: 'Click "Send"',
     step3Text:
-      'Нажмите "Отправить", чтобы передать то, что вы ввели в поле ответа. Используйте это для ответа станции.',
+      'Click "Send" to transmit whatever you\'ve entered in the Response text field. Use this to respond to a station.',
 
-    step4Title: 'Заполните поля режима',
+    step4Title: 'Fill in mode-specific fields',
     step4Text:
-      'Эти поля появляются, когда нужно ввести дополнительные детали, такие как имя, область или серийный номер контеста. Их заполнение полностью необязательно перед нажатием "TU".',
+      'These mode-specific fields appear when you need to enter extra details, such as a name, state, or a contest serial number. Filling these in are completely optional before clicking "TU".',
 
-    step5Title: 'Нажмите "TU"',
+    step5Title: 'Click "TU"',
     step5Text:
-      'После завершения обмена нажмите "TU", чтобы отправить завершающее сообщение благодарности. Каждый режим имеет немного отличающийся способ завершения. После нажатия TU иногда появляются новые станции! Но если этого не произошло, всегда можно вернуться и нажать CQ.',
+      'After completing an exchange, click "TU" to send a wrap-up, thank you message. Each mode has a slightly different way of completing. After clicking TU, new stations sometimes hop in! But, in case they don\'t, you can always go back and click CQ.',
 
-    stopTitle: 'Стоп',
-    stopText: 'Останавливает текущую передачу или активность.',
+    stopTitle: 'Stop',
+    stopText: 'Halts the current transmission or activity.',
 
-    resetTitle: 'Сброс',
+    resetTitle: 'Reset',
     resetText:
-      'Очищает все записи и позволяет начать новую последовательность связей.',
+      'Clears all entries and starts you fresh, ready to begin a new contact sequence.',
   },
-
   activeStations: 'Active Stations:',
   gettingStarted: 'Getting Started',
   helpModal: {
     cheat: 'How to "Cheat"',
     cheatText:
-      "If you feel like you need a little extra help to get started, open your browser's JavaScript console to see behind the scenes information, such as which stations are calling.",
+      "If you need a little extra help to get started, open your browser's JavaScript console to see behind the scenes information, such as which stations are calling.",
   },
 };

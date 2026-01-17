@@ -82,31 +82,33 @@
   <body class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
-      <h1 class="mb-0" style="display: inline-block; line-height: 1">
-        <span id="app-title"></span>
-        <img
-          src="img/morsewalker-logo.png"
-          alt="Morse Walker Logo"
-          style="height: 1em; vertical-align: bottom"
-        />
-      </h1>
-      <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
-        <p class="fw-bold fst-italic mb-0" id="app-subtitle">Walk before you run!</p>
-        <a 
-        href="https://r9o.ru" 
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn btn-sm btn-primary"
-        style="font-size: 0.8rem;"
-        data-bs-toggle="tooltip"
-        data-bs-placement="bottom"
-        title="Перейти на главный сайт R9O"
-        >
-          <i class="fa-solid fa-globe me-1"></i>
-          r9o.ru
-        </a>
+        <h1 class="mb-0" style="display: inline-block; line-height: 1">
+          <span id="app-title"></span>
+          <img
+            src="img/morsewalker-logo.png"
+            alt="Morse Walker Logo"
+            style="height: 1em; vertical-align: bottom"
+          />
+        </h1>
+        <div class="d-flex align-items-center gap-2 mt-2 flex-wrap">
+          <p class="fw-bold fst-italic mb-0" id="app-subtitle">
+            Walk before you run!
+          </p>
+          <a
+            href="https://r9o.ru"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-sm btn-primary"
+            style="font-size: 0.8rem"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Перейти на главный сайт R9O"
+          >
+            <i class="fa-solid fa-globe me-1"></i>
+            r9o.ru
+          </a>
+        </div>
       </div>
-    </div>
 
       <!-- Beta Warning Banner -->
       <div class="container">
@@ -255,6 +257,41 @@
             for="modeSst"
             >K1USN SST</label
           >
+        <!-- 🏆 HST Mode -->
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeHst"
+            value="hst"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeHst"
+          >
+            <i class="fa-solid fa-trophy me-1"></i>
+            HST
+            <span class="badge bg-success ms-1">NEW</span>
+          </label>
+
+          <!-- 🌍 WPX Mode -->
+          <input
+            type="radio"
+            class="btn-check"
+            name="mode"
+            id="modeWpx"
+            value="wpx"
+            autocomplete="off"
+          />
+          <label
+            class="btn btn-outline-primary d-flex align-items-center justify-content-center"
+            for="modeWpx"
+          >
+            <i class="fa-solid fa-earth-americas me-1"></i>
+            WPX
+            <span class="badge bg-success ms-1">NEW</span>
+          </label>
         </div>
       </div>
     </div>
@@ -987,7 +1024,16 @@
     </div>
 
     <hr />
-
+    <!-- 🏆 Competition Mode Button -->
+    <div class="row g-3 mb-3">
+      <div class="col-12">
+        <button id="startCompetitionButton" class="btn btn-lg btn-success w-100">
+          <i class="fa-solid fa-trophy me-2"></i>
+          <span data-i18n="competition.start">Start Competition Mode</span>
+          <span class="badge bg-warning text-dark ms-2">NEW!</span>
+        </button>
+      </div>
+    </div>
     <!-- Control Buttons -->
     <div class="container">
       <!-- Active Stations Row -->
@@ -1230,6 +1276,68 @@
       </tbody>
     </table>
 
+
+      <hr />
+
+      <!-- Scoreboard -->
+<h3>
+  <i class="fa-solid fa-trophy me-2"></i>
+  <span data-i18n="scoreboard.title">Scoreboard</span>
+</h3>
+
+<div class="row g-3">
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title" data-i18n="scoreboard.qsos">QSOs</h5>
+        <p class="card-text display-4" id="scoreQsos">0</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title" data-i18n="scoreboard.points">Points</h5>
+        <p class="card-text display-4" id="scorePoints">0</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center">
+      <div class="card-body">
+        <h5 class="card-title" data-i18n="scoreboard.multipliers">Multipliers</h5>
+        <p class="card-text display-4" id="scoreMultipliers">0</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-3">
+    <div class="card text-center bg-primary text-white">
+      <div class="card-body">
+        <h5 class="card-title" data-i18n="scoreboard.total">Total Score</h5>
+        <p class="card-text display-4 fw-bold" id="scoreTotalScore">0</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Детальная статистика -->
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="alert alert-info">
+      <strong data-i18n="scoreboard.accuracy">Accuracy:</strong>
+      <span id="scoreAccuracy">100%</span>
+      <span class="mx-3">|</span>
+      <strong data-i18n="scoreboard.mistakes">Mistakes:</strong>
+      <span id="scoreMistakes">0</span>
+      <span class="mx-3">|</span>
+      <strong data-i18n="scoreboard.dupes">Dupes:</strong>
+      <span id="scoreDupes">0</span>
+    </div>
+  </div>
+</div>
     <!-- Footer -->
     <footer class="mt-5 py-3" style="background-color: #343a40">
       <div class="container text-center">
