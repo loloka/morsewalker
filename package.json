@@ -1,13 +1,24 @@
 {
-  "name": " ",
-  "version": "0.0.1",
-  "description": "",
+  "name": "morsewalker-ru",
+  "version": "0.2.0",
+  "description": "Веб-тренажёр CW: пайлапы, контестные режимы (RDA, WPX, CWT, SST, POTA), русская локализация. Форк Morse Walker (W6NYC).",
   "private": true,
   "keywords": [
-    ""
+    "cw",
+    "morse-code",
+    "ham-radio",
+    "amateur-radio",
+    "contest",
+    "pileup-trainer",
+    "rda",
+    "wpx"
   ],
-  "license": "",
-  "author": "",
+  "homepage": "https://morse.r9o.ru",
+  "license": "MIT",
+  "author": "R9OGL <admin@r9o.ru>",
+  "contributors": [
+    "W6NYC (Henry Prince) — оригинальный Morse Walker"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve --open --config webpack.config.dev.js",

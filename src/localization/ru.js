@@ -73,6 +73,26 @@ export const ru = {
   },
 
   // 🏆 Scoreboard
+  hotkeys: {
+    title: 'Горячие клавиши',
+    contestMode: 'Контестная раскладка',
+    trainingMode: 'Обучающая раскладка',
+    toggleLabel: 'Обучающая раскладка',
+    hint: 'F1–F5 — стандарт контест-логгеров (Morse Runner, N1MM, DXLog). Привыкайте сразу к ним: в живом эфире те же клавиши.',
+    cq: 'Общий вызов',
+    myExchange: 'Мой обмен',
+    tu: 'Завершить QSO',
+    myCall: 'Мой позывной',
+    hisCall: 'Его позывной',
+    insert: 'Позывной + обмен',
+    question: 'Повторите (?)',
+    agn: 'Повторить (AGN)',
+    qrs: 'Медленнее (QRS)',
+    wipe: 'Очистить поля',
+    send: 'Отправить',
+    stop: 'Стоп',
+    speed: 'Скорость',
+  },
   scoreboard: {
     title: 'Таблица результатов',
     qsos: 'Связи',

@@ -40,6 +40,7 @@ import {
 } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
 import { modes } from './modes.js';
+import { LAYOUTS } from './hotkeys.js';
 import { i18n } from '../localization/index.js';
 
 /**
@@ -47,6 +48,7 @@ import { i18n } from '../localization/index.js';
  */
 let currentMode;
 let scoringSystem; // 🏆 Добавлено
+let hotkeyManager = null; // ⌨️ Менеджер горячих клавиш
 let inputs = null;
 let currentStations = [];
 let currentStation = null;
@@ -58,6 +60,25 @@ let totalContacts = 0;
 let yourStation = null;
 let lastRespondingStations = null;
 const farnsworthLowerBy = 6;
+
+/**
+ * ⏎ Стадии QSO для ESM (Enter Sends Message).
+ *
+ * В контест-логгерах Enter — единственная клавиша, которой ведут связь:
+ * что уйдёт в эфир, определяется тем, на какой стадии находится QSO.
+ * Раньше состояние было размазано по флагам readyForTU / activeStationIndex —
+ * теперь оно явное.
+ *
+ *   IDLE         — эфир пуст, ничего не передавали
+ *   CQ_SENT      — дали общий вызов, идёт разбор отвечающих станций
+ *   READY_FOR_TU — позывной и обмен приняты, осталось записать и закрыть QSO
+ */
+const QSO_STATE = {
+  IDLE: 'IDLE',
+  CQ_SENT: 'CQ_SENT',
+  READY_FOR_TU: 'READY_FOR_TU',
+};
+let qsoState = QSO_STATE.IDLE;
 
 /**
  * Event listener setup.
@@ -84,14 +105,41 @@ document.addEventListener('DOMContentLoaded', () => {
   const yourVolume = document.getElementById('yourVolume');
 
   // ⌨️ Initialize Hotkey Manager
-  const hotkeyManager = new HotkeyManager({
-    cqButton,
-    sendButton,
-    tuButton,
-    stopButton,
-    resetButton,
-    responseField,
-  });
+  hotkeyManager = new HotkeyManager(
+    {
+      cqButton,
+      sendButton,
+      tuButton,
+      stopButton,
+      resetButton,
+      responseField,
+      infoField,
+      infoField2,
+    },
+    {
+      cq,
+      tu,
+      stop,
+      wipe,
+      sendMacro,
+      adjustSpeed,
+    }
+  );
+
+  // Переключатель раскладки Contest / Training
+  const layoutToggle = document.getElementById('hotkeyLayoutToggle');
+  const savedLayout = localStorage.getItem('hotkeyLayout') || 'contest';
+  hotkeyManager.setLayout(savedLayout);
+  if (layoutToggle) {
+    layoutToggle.checked = savedLayout === 'training';
+    layoutToggle.addEventListener('change', () => {
+      const name = layoutToggle.checked ? 'training' : 'contest';
+      hotkeyManager.setLayout(name);
+      localStorage.setItem('hotkeyLayout', name);
+      renderHotkeyBar();
+    });
+  }
+  renderHotkeyBar();
 
   // Language switcher initialization
   i18n.setLanguage(i18n.currentLang);
@@ -167,26 +215,14 @@ document.addEventListener('DOMContentLoaded', () => {
   updateResponsiveButtons();
   window.addEventListener('resize', updateResponsiveButtons);
 
-  // Enter key handlers
-  responseField.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
+  // ⏎ ESM — Enter Sends Message.
+  // Одна клавиша ведёт QSO целиком: что именно уйдёт в эфир, решает стадия.
+  [responseField, infoField, infoField2].forEach((field) => {
+    field.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' || event.shiftKey) return;
       event.preventDefault();
-      sendButton.click();
-    }
-  });
-
-  infoField.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && tuButton.style.display !== 'none') {
-      event.preventDefault();
-      tuButton.click();
-    }
-  });
-
-  infoField2.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && tuButton.style.display !== 'none') {
-      event.preventDefault();
-      tuButton.click();
-    }
+      esmEnter();
+    });
   });
 
   cqButton.addEventListener('click', () => {
@@ -230,6 +266,14 @@ document.addEventListener('DOMContentLoaded', () => {
   yourVolume.addEventListener('input', () => {
     localStorage.setItem(keys.yourVolume, yourVolume.value);
   });
+
+  // Бейдж скорости в панели горячих клавиш держим в синхроне с полем
+  const speedBadge = document.getElementById('speedBadge');
+  const syncSpeedBadge = () => {
+    if (speedBadge) speedBadge.textContent = `${yourSpeed.value} WPM`;
+  };
+  syncSpeedBadge();
+  yourSpeed.addEventListener('input', syncSpeedBadge);
 
   // QRN intensity
   const qrnRadioButtons = document.querySelectorAll('input[name="qrn"]');
@@ -367,53 +411,6 @@ function applyModeSettings(mode) {
   });
 }
 
-// 🆕 Если режим RDA — включить Russian Only
-if (mode === 'rda') {
-  const russianOnlyCheckbox = document.getElementById('russianOnly');
-  if (russianOnlyCheckbox && !russianOnlyCheckbox.checked) {
-    russianOnlyCheckbox.checked = true;
-    console.log('✅ Russian Only enabled for RDA mode');
-  }
-}
-
-const tuButton = document.getElementById('tuButton');
-const infoField = document.getElementById('infoField');
-const infoField2 = document.getElementById('infoField2');
-const resultsTable = document.getElementById('resultsTable');
-const modeResultsHeader = document.getElementById('modeResultsHeader');
-
-tuButton.style.display = config.showTuButton ? 'inline-block' : 'none';
-
-if (config.showInfoField) {
-  infoField.style.display = 'inline-block';
-  infoField.placeholder = config.infoFieldPlaceholder;
-} else {
-  infoField.style.display = 'none';
-  infoField.value = '';
-}
-
-if (config.showInfoField2) {
-  infoField2.style.display = 'inline-block';
-  infoField2.placeholder = config.infoField2Placeholder;
-} else {
-  infoField2.style.display = 'none';
-  infoField2.value = '';
-}
-
-modeResultsHeader.textContent = config.resultsHeader;
-
-const extraColumns = resultsTable.querySelectorAll('.mode-specific-column');
-extraColumns.forEach((col) => {
-  col.style.display = config.tableExtraColumn ? 'table-cell' : 'none';
-});
-
-const extraColumnHeaders = resultsTable.querySelectorAll(
-  'thead .mode-specific-column'
-);
-extraColumnHeaders.forEach((header) => {
-  header.textContent = config.extraColumnHeader || 'Additional Info';
-});
-
 function resetGameState() {
   currentStations = [];
   currentStation = null;
@@ -422,6 +419,7 @@ function resetGameState() {
   currentStationAttempts = 0;
   currentStationStartTime = null;
   totalContacts = 0;
+  setQsoState(QSO_STATE.IDLE);
 
   // 🏆 Reset Scoring
   scoringSystem = new ScoringSystem();
@@ -485,6 +483,8 @@ function cq() {
     cqButton.disabled = true;
     nextSingleStation(yourResponseTimer);
   }
+
+  setQsoState(QSO_STATE.CQ_SENT);
 }
 
 function send() {
@@ -595,6 +595,7 @@ function send() {
         }
         readyForTU = true;
         activeStationIndex = matchIndex;
+        setQsoState(QSO_STATE.READY_FOR_TU);
         return;
       }
     }
@@ -827,22 +828,21 @@ function tu() {
     wpmString,
     currentStationAttempts,
     audioContext.currentTime - currentStationStartTime,
-    displayInfo  // ✅ Теперь показывает TL-27 вместо (UNDEFINED)
+    displayInfo // ✅ Теперь показывает TL-27 вместо (UNDEFINED)
   );
-
 
   // 🏆 Calculate Score with validation
   const qso = {
-  callsign: currentStation.callsign,
-  // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
-  region: currentStation.rdaRegion || currentStation.state,
-  state: currentStation.state,
-};
+    callsign: currentStation.callsign,
+    // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
+    region: currentStation.rdaRegion || currentStation.state,
+    state: currentStation.state,
+  };
 
   // 🐛 DEBUG: Показываем, что отправляем
   console.log('📤 Отправка в scoringSystem:', {
     mode: currentMode,
-    qso: qso
+    qso: qso,
   });
 
   // ✅ Защита от ошибок
@@ -858,6 +858,7 @@ function tu() {
   activeStationIndex = null;
   currentStationAttempts = 0;
   readyForTU = false;
+  setQsoState(QSO_STATE.CQ_SENT);
   updateActiveStations(currentStations.length);
 
   const responseField = document.getElementById('responseField');
@@ -951,7 +952,261 @@ function stop() {
     currentStationAttempts = 0;
     currentStationStartTime = null;
     updateActiveStations(0);
+    setQsoState(QSO_STATE.IDLE);
   }
+}
+
+/**
+ * ⏎ ESM — Enter Sends Message.
+ *
+ * Enter отправляет то, что уместно на текущей стадии QSO:
+ *   поле позывного пустое   → CQ
+ *   позывной введён         → его позывной + твой обмен
+ *   их обмен принят         → TU и переход к следующей связи
+ *
+ * Именно так работают N1MM, DXLog и Morse Runner. Привычка нажимать
+ * один Enter вместо трёх разных кнопок переносится в живой эфир как есть.
+ */
+function esmEnter() {
+  if (getAudioLock()) return;
+
+  const modeConfig = getModeConfig();
+  const responseField = document.getElementById('responseField');
+  const hasCall = responseField.value.trim() !== '';
+
+  // Одиночные режимы (single / hst): TU-шага нет, цикл закрывается сам
+  if (!modeConfig.showTuStep) {
+    if (!hasCall && currentStation === null) {
+      cq();
+    } else {
+      send();
+    }
+    return;
+  }
+
+  switch (qsoState) {
+    // Их обмен уже принят — Enter закрывает связь
+    case QSO_STATE.READY_FOR_TU:
+      tu();
+      return;
+
+    // Эфир пуст либо идёт разбор пайлапа
+    case QSO_STATE.IDLE:
+    case QSO_STATE.CQ_SENT:
+    default:
+      if (!hasCall) {
+        if (currentStations.length === 0) cq();
+        return;
+      }
+      send();
+  }
+}
+
+/** Перевод QSO в новую стадию + обновление подсказки «что дальше» */
+function setQsoState(next) {
+  if (qsoState === next) return;
+  qsoState = next;
+  console.log(`⏎ Стадия QSO: ${next}`);
+  renderQsoHint();
+}
+
+/**
+ * Подсказка под панелью клавиш: что Enter сделает прямо сейчас.
+ * Новичку это заменяет чтение мануала — он видит следующий шаг на экране.
+ */
+function renderQsoHint() {
+  const hint = document.getElementById('qsoHint');
+  if (!hint) return;
+
+  const key = `esm.${qsoState}`;
+  hint.textContent = i18n.t(key);
+  hint.setAttribute('data-i18n', key);
+}
+
+/**
+ * ⌨️ Макросы функциональных клавиш.
+ *
+ * Собираются из тех же кубиков, что и обычный ход QSO:
+ *   F2  myExchange      — только твой обмен, без позывного корреспондента
+ *   F4  myCall          — твой позывной
+ *   F5  hisCall         — позывной из поля ввода
+ *   INS hisCallExchange — позывной + обмен одной посылкой (F5 + F2)
+ *   F7  question        — «?»
+ *   F8  agn             — «AGN»
+ *   F3  qrs             — «QRS» (только обучающая раскладка)
+ */
+function sendMacro(name) {
+  if (getAudioLock()) return;
+
+  const modeConfig = getModeConfig();
+  const responseField = document.getElementById('responseField');
+  const typedCall = responseField.value.trim().toUpperCase();
+
+  // Станция, с которой сейчас ведётся QSO (если есть)
+  const target =
+    activeStationIndex !== null
+      ? currentStations[activeStationIndex]
+      : currentStation;
+
+  // Позывной корреспондента: приоритет — то, что набрано в поле
+  const theirCall = typedCall || target?.callsign || '';
+  const theirStub = target || { callsign: theirCall };
+
+  let message = '';
+
+  switch (name) {
+    case 'myCall':
+      message = ensureYourStation()?.callsign || '';
+      break;
+
+    case 'hisCall':
+      message = theirCall;
+      break;
+
+    case 'myExchange':
+      message = buildMyExchange(modeConfig, theirStub);
+      break;
+
+    case 'hisCallExchange':
+      if (!theirCall) return;
+      message = `${theirCall} ${buildMyExchange(modeConfig, theirStub)}`;
+      break;
+
+    case 'question':
+      message = '?';
+      break;
+
+    case 'agn':
+      message = 'AGN';
+      break;
+
+    case 'qrs':
+      message = 'QRS';
+      break;
+
+    default:
+      console.warn(`⚠️ Неизвестный макрос: ${name}`);
+      return;
+  }
+
+  if (!message.trim()) return;
+
+  // AGN / ? / QRS проходят через обычный send(): у них есть игровая реакция
+  if (name === 'question' || name === 'agn' || name === 'qrs') {
+    const saved = responseField.value;
+    responseField.value = message;
+    send();
+    responseField.value = saved;
+    return;
+  }
+
+  playFromYourStation(message);
+}
+
+/** Твой обмен без позывного корреспондента (для F2 и Insert) */
+function buildMyExchange(modeConfig, theirStation) {
+  const you = ensureYourStation();
+  if (!you) return '';
+  const fn = modeConfig.myExchange || modeConfig.yourExchange;
+  let text = fn(you, theirStation, null);
+
+  if (inputs?.enableCutNumbers) {
+    const cutMap = inputs.cutNumbers;
+    text = text.replace(/\d/g, (digit) => cutMap[digit] || digit);
+  }
+  return text;
+}
+
+/** Гарантирует, что твоя станция и её плеер созданы (макросы работают и до CQ) */
+function ensureYourStation() {
+  if (yourStation && yourStation.player) return yourStation;
+  if (inputs === null) inputs = getInputs();
+  if (inputs === null) return null;
+  yourStation = getYourStation();
+  if (!yourStation) return null;
+  yourStation.player = createMorsePlayer(yourStation);
+  return yourStation;
+}
+
+function playFromYourStation(message) {
+  const you = ensureYourStation();
+  if (!you) return;
+  if (!isBackgroundStaticPlaying()) createBackgroundStatic();
+  const timer = you.player.playSentence(
+    message,
+    audioContext.currentTime + 0.2
+  );
+  updateAudioLock(timer);
+  console.log(`--> Макрос: "${message}"`);
+}
+
+/** ⌨️ Изменение скорости с клавиатуры (+/-) */
+function adjustSpeed(delta) {
+  const yourSpeed = document.getElementById('yourSpeed');
+  const min = parseInt(yourSpeed.min, 10) || 5;
+  const max = parseInt(yourSpeed.max, 10) || 60;
+  const next = Math.min(
+    max,
+    Math.max(min, parseInt(yourSpeed.value, 10) + delta)
+  );
+  yourSpeed.value = next;
+  localStorage.setItem('yourSpeed', next);
+  yourSpeed.dispatchEvent(new Event('input', { bubbles: true }));
+
+  // Пересоздаём плеер, чтобы новая скорость применилась сразу
+  if (yourStation) {
+    yourStation.wpm = next;
+    yourStation.player = createMorsePlayer(yourStation);
+  }
+  if (inputs) inputs.yourSpeed = next;
+
+  const badge = document.getElementById('speedBadge');
+  if (badge) {
+    badge.textContent = `${next} WPM`;
+    badge.classList.add('speed-badge-flash');
+    setTimeout(() => badge.classList.remove('speed-badge-flash'), 300);
+  }
+}
+
+/** ⌨️ F12 — очистить поля ввода, не трогая лог и счёт (в логгерах это «wipe») */
+function wipe() {
+  const responseField = document.getElementById('responseField');
+  document.getElementById('infoField').value = '';
+  document.getElementById('infoField2').value = '';
+  responseField.value = '';
+  responseField.focus();
+}
+
+/**
+ * ⌨️ Отрисовка панели-подсказки с горячими клавишами.
+ * Новичок не должен угадывать раскладку — она всегда на экране.
+ */
+function renderHotkeyBar() {
+  const bar = document.getElementById('hotkeyBar');
+  if (!bar || !hotkeyManager) return;
+
+  const layout = LAYOUTS[hotkeyManager.getLayout()];
+
+  bar.innerHTML = layout.keys
+    .map((k) => {
+      const label = `<span class="hotkey-chip-label" data-i18n="${k.labelKey}">${i18n.t(k.labelKey)}</span>`;
+      const kbd = `<kbd>${k.key}</kbd>`;
+
+      // Клавиши с действием — кликабельны. На телефоне F-клавиш нет,
+      // поэтому те же макросы доступны нажатием пальцем.
+      if (k.action) {
+        return `<button type="button" class="hotkey-chip" data-action="${k.action}">${kbd}${label}</button>`;
+      }
+      return `<span class="hotkey-chip hotkey-chip-static">${kbd}${label}</span>`;
+    })
+    .join('');
+
+  bar.querySelectorAll('[data-action]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      hotkeyManager.run(btn.dataset.action);
+      document.getElementById('responseField').focus();
+    });
+  });
 }
 
 function reset() {
@@ -964,6 +1219,7 @@ function reset() {
   currentStations = [];
   activeStationIndex = null;
   readyForTU = false;
+  setQsoState(QSO_STATE.IDLE);
 
   // Reset RDA serial number for non-Russian stations
   resetRDASerialNumber();
@@ -992,9 +1248,6 @@ function reset() {
 /**
  * 📊 Update scoreboard display
  */
-/**
- * 📊 Update scoreboard display
- */
 function updateScoreboard() {
   // 🛡️ Проверка: инициализирована ли система подсчёта?
   if (!scoringSystem) {
@@ -1020,17 +1273,24 @@ function updateScoreboard() {
 
   // ✅ Обновляем только если элемент существует
   if (elements.scoreQsos) elements.scoreQsos.textContent = finalScore.qsos;
-  if (elements.scorePoints) elements.scorePoints.textContent = finalScore.points;
-  if (elements.scoreMultipliers) elements.scoreMultipliers.textContent = finalScore.multipliers;
-  if (elements.scoreTotalScore) elements.scoreTotalScore.textContent = finalScore.totalScore;
+  if (elements.scorePoints)
+    elements.scorePoints.textContent = finalScore.points;
+  if (elements.scoreMultipliers)
+    elements.scoreMultipliers.textContent = finalScore.multipliers;
+  if (elements.scoreTotalScore)
+    elements.scoreTotalScore.textContent = finalScore.totalScore;
 
   // Рассчитываем точность
   const accuracy =
     finalScore.qsos > 0
-      ? Math.round(((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100)
+      ? Math.round(
+          ((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100
+        )
       : 100;
 
-  if (elements.scoreAccuracy) elements.scoreAccuracy.textContent = accuracy + '%';
-  if (elements.scoreMistakes) elements.scoreMistakes.textContent = finalScore.mistakes;
+  if (elements.scoreAccuracy)
+    elements.scoreAccuracy.textContent = accuracy + '%';
+  if (elements.scoreMistakes)
+    elements.scoreMistakes.textContent = finalScore.mistakes;
   if (elements.scoreDupes) elements.scoreDupes.textContent = finalScore.dupes;
-} 
+}

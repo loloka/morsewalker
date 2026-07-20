@@ -86,6 +86,8 @@ class LocalizationManager {
     this.updateLabel('modeRda', 'modes.rda');
     this.updateLabel('modeCwt', 'modes.cwt');
     this.updateLabel('modeSst', 'modes.k1usnSST');
+    this.updateModeLabelWithBadge('modeHst', 'modes.hst');
+    this.updateModeLabelWithBadge('modeWpx', 'modes.wpx');
 
     // 5. Настройки вашей станции
     const yourStationTitle = document.querySelector('#headingYourStation h5');
@@ -321,6 +323,23 @@ class LocalizationManager {
       helpTexts[6].textContent = this.t('help.stopText');
       if (helpTexts[7]) helpTexts[7].textContent = this.t('help.resetText');
     }
+  }
+
+  /**
+   * Перевод названия режима с сохранением иконки и бейджа NEW.
+   * Обычный updateLabel затирает вложенные элементы через textContent.
+   */
+  updateModeLabelWithBadge(forId, translationKey) {
+    const label = document.querySelector(`label[for="${forId}"]`);
+    if (!label) return;
+
+    const icon = label.querySelector('i');
+    const badge = label.querySelector('.badge');
+
+    label.textContent = '';
+    if (icon) label.appendChild(icon);
+    label.appendChild(document.createTextNode(` ${this.t(translationKey)} `));
+    if (badge) label.appendChild(badge);
   }
 
   updateLabel(forId, translationKey) {

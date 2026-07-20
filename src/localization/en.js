@@ -75,6 +75,26 @@ export const en = {
   },
 
   // 🏆 New Scoreboard Section
+  hotkeys: {
+    title: 'Hotkeys',
+    contestMode: 'Contest layout',
+    trainingMode: 'Training layout',
+    toggleLabel: 'Training layout',
+    hint: 'F1-F5 follow the contest logger standard (Morse Runner, N1MM, DXLog). Learn these from day one - the same keys are used on the air.',
+    cq: 'Call CQ',
+    myExchange: 'My exchange',
+    tu: 'Complete QSO',
+    myCall: 'My callsign',
+    hisCall: 'His callsign',
+    insert: 'His call + exchange',
+    question: 'Repeat (?)',
+    agn: 'Again (AGN)',
+    qrs: 'Slow down (QRS)',
+    wipe: 'Wipe fields',
+    send: 'Send',
+    stop: 'Stop',
+    speed: 'Speed',
+  },
   scoreboard: {
     title: 'Scoreboard',
     qsos: 'QSOs',

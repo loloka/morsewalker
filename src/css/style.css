@@ -90,3 +90,165 @@ input[type='text']::placeholder {
     margin-top: 60px;
   }
 }
+
+/* ==========================================================================
+   ⌨️ Панель горячих клавиш
+   На десктопе — постоянная подсказка (новичок не должен угадывать раскладку).
+   На телефоне — те же макросы, но кнопками: F-клавиш на мобильном нет.
+   ========================================================================== */
+
+.hotkey-panel {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.hotkey-panel-title {
+  font-size: 0.95rem;
+}
+
+.hotkey-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.hotkey-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.6rem;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: #212529;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.08s ease;
+}
+
+button.hotkey-chip {
+  cursor: pointer;
+}
+
+button.hotkey-chip:hover {
+  background: #e7f1ff;
+  border-color: #0d6efd;
+}
+
+button.hotkey-chip:active {
+  transform: translateY(1px);
+}
+
+.hotkey-chip-static {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.hotkey-chip kbd {
+  background: #212529;
+  color: #fff;
+  border-radius: 0.25rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hotkey-hint {
+  color: #6c757d;
+}
+
+#speedBadge {
+  font-variant-numeric: tabular-nums;
+}
+
+.speed-badge-flash {
+  background-color: #198754 !important;
+}
+
+/* ==========================================================================
+   📱 Мобильная адаптация
+   ========================================================================== */
+
+@media (max-width: 767.98px) {
+  body.container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  /* Режимы: горизонтальная «резиновая» лента вместо расползающегося btn-group */
+  .btn-group[aria-label='Mode selection'] {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+    width: 100%;
+  }
+
+  .btn-group[aria-label='Mode selection'] > .btn {
+    border-radius: 0.375rem !important;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.35rem;
+  }
+
+  /* Поля ввода QSO — на всю ширину, крупный шрифт (iOS не зумит от 16px) */
+  #responseField,
+  #infoField,
+  #infoField2 {
+    max-width: none !important;
+    width: 100%;
+    font-size: 16px;
+    text-transform: uppercase;
+  }
+
+  /* Основные кнопки — крупные тапабельные цели */
+  #cqButton,
+  #sendButton,
+  #tuButton,
+  #stopButton,
+  #resetButton {
+    flex: 1 1 auto;
+    min-height: 48px;
+    font-size: 1rem;
+  }
+
+  .hotkey-panel {
+    padding: 0.6rem;
+  }
+
+  /* На телефоне клавиша роли не играет — важна подпись */
+  .hotkey-chip {
+    flex: 1 1 calc(50% - 0.4rem);
+    justify-content: center;
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
+
+  .hotkey-chip-static {
+    display: none;
+  }
+
+  .hotkey-chip kbd {
+    display: none;
+  }
+
+  /* Таблица результатов не должна ломать вёрстку */
+  #resultsTable {
+    font-size: 0.85rem;
+  }
+
+  .table-responsive-wrapper {
+    overflow-x: auto;
+  }
+}
+
+/* Планшет: раскладка в две колонки чипов */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .hotkey-chip {
+    font-size: 0.8rem;
+  }
+}

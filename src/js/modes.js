@@ -13,6 +13,7 @@ export const modes = {
       showTuStep: false,
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} K`,
+      myExchange: (your, their, arb) => `599 ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} 599 ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) => `R 599 ${their.name} ${their.state}`,
@@ -37,6 +38,8 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      myExchange: (your, their, arb) =>
+        `599 ${your.serialNumber} ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} 599 ${your.serialNumber} ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) =>
@@ -62,6 +65,7 @@ export const modes = {
       extraInfoFieldKey: 'park',
       cqMessage: (your, their, arb) =>
         `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
+      myExchange: (your, their, arb) => `599 ${your.state}`,
       yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.state}`,
       theirExchange: (your, their, arb) => `R 599 ${their.park || 'K-1234'}`,
       yourSignoff: (your, their, arb) => `TU ${arb || 'K-1234'} 73`,
@@ -85,6 +89,7 @@ export const modes = {
       extraInfoFieldKey: 'region',
       cqMessage: (your, their, arb) =>
         `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
+      myExchange: (your, their, arb) => `599 ${your.region || 'MO-01'}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} 599 ${your.region || 'MO-01'}`,
       theirExchange: (your, their, arb) => `R 599 ${their.region}`,
@@ -112,6 +117,7 @@ export const modes = {
       extraInfoFieldKey2: 'state',
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      myExchange: (your, their, arb) => `${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) => `R ${their.name} ${their.state}`,
@@ -136,6 +142,8 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ SST ${your.callsign} ${your.callsign} K`,
+      myExchange: (your, their, arb) =>
+        `${your.serialNumber} ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} ${your.serialNumber} ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) =>
@@ -156,6 +164,7 @@ export const modes = {
     logic: {
       showTuStep: false,
       cqMessage: (your, their, arb) => `${your.callsign}`,
+      myExchange: (your, their, arb) => `${their.callsign}`,
       yourExchange: (your, their, arb) => `${their.callsign}`,
       theirExchange: (your, their, arb) => `R`,
       yourSignoff: (your, their, arb) => ``,
@@ -179,6 +188,7 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
+      myExchange: (your, their, arb) => `599 ${your.serialNumber}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} 599 ${your.serialNumber}`,
       theirExchange: (your, their, arb) => `R 599 ${their.serialNumber}`,

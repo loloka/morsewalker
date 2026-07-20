@@ -1,201 +1,148 @@
-# Morse Walker - Russian Edition 🇷🇺
-
 <p align="center">
-  <img src="src/img/morsewalker-logo.png" alt="Morse Walker Logo" width="200"/>
+  <img src="src/img/morsewalker-logo.png" alt="Morse Walker" width="180"/>
 </p>
 
-<p align="center">
-  <strong>CW Training Simulator with Russian Language Support</strong>
-</p>
+<h1 align="center">Morse Walker — Russian Edition 🇷🇺</h1>
+
+<p align="center"><strong>Веб-тренажёр CW с русской локализацией и режимом RDA</strong></p>
 
 <p align="center">
-  <a href="https://morse.r9o.ru" target="_blank">
-    <img src="https://img.shields.io/badge/🌐_Live_Demo-Beta_Testing-blue?style=for-the-badge" alt="Live Demo"/>
-  </a>
-  <a href="https://morse.r9o.ru" target="_blank">
-    <img src="https://img.shields.io/badge/Status-Beta-yellow?style=for-the-badge" alt="Beta Status"/>
-  </a>
+  <a href="https://morse.r9o.ru"><img src="https://img.shields.io/badge/🌐_Демо-morse.r9o.ru-blue?style=for-the-badge" alt="Live Demo"/></a>
+  <a href="https://morse.r9o.ru"><img src="https://img.shields.io/badge/Статус-Beta-yellow?style=for-the-badge" alt="Beta"/></a>
 </p>
 
 ---
 
-## 🚀 **Try it Now!**
+> ⚠️ **Проект в стадии бета-тестирования.** Что-то может работать неправильно.
+> Если нашли баг — не ругайте, а сообщите: [issues](https://github.com/sc0tfree/morsewalker/issues/new/choose) или admin@r9o.ru
 
-**Live Beta Version:** **[https://morse.r9o.ru](https://morse.r9o.ru)** 🎵
+## Что это
 
-> ⚠️ **Currently in Beta Testing** - Your feedback is invaluable! Please report any bugs or suggestions.
+Тренажёр приёма на слух в браузере. Слушаете морзянку, записываете позывные и
+обмены, проводите QSO — как в настоящем контесте, но без риска испортить эфир.
 
----
+Задача проекта — **удобный вход в контестинг для начинающих**. Это не замена
+[Morse Runner](https://www.dxatlas.com/MorseRunner/) — общепризнанного
+соревновательного стандарта. Но раскладка клавиш и форматы обменов здесь
+приводятся к тем же правилам, что и в живом эфире, чтобы потом не пришлось
+переучиваться.
 
-## 🌟 Enhanced Features
+Установка не нужна — работает прямо в браузере: **[morse.r9o.ru](https://morse.r9o.ru)**
 
-This is an enhanced version of Morse Walker with:
+## Режимы
 
-- 🇷🇺 **Full Russian language support** (EN/RU switcher)
-- 📻 **RDA Contest mode** with 85 Russian regions
-- 🎯 **500+ Russian callsigns** generator
-- 🇷🇺 **Russian Only Callsigns** option
-- 📖 **Translated Help modal**
-- 🎨 **Improved UI** with language switcher
+| Режим | Обмен | Для чего |
+|---|---|---|
+| **Один позывной** | позывной + имя + регион | Первое знакомство, без помех и пайлапа |
+| **Режим контест** | 599 + номер | Базовый контестный цикл |
+| **POTA Активатор** | 599 + референс парка | Работа активатора |
+| **РДА контест** 🇷🇺 | 599 + район РДА | 85 российских районов, реальные префиксы |
+| **CWT** | имя + регион | Формат CWops |
+| **K1USN SST** | номер + имя + регион | Медленный «дружелюбный» спринт |
+| **HST** ⚠️ WIP | позывные на скорость | Скоростной приём (в разработке) |
+| **WPX** ⚠️ WIP | 599 + номер | Множители по префиксам (в разработке) |
 
-**Original by** [W6NYC](https://github.com/sc0tfree/morsewalker)  
-**Enhanced by** [R9OGL](https://qrz.com/db/R9OGL)
+## Возможности
 
----
+- Регулировка скорости (WPM) и разрядки Фарнсворта
+- QRN — атмосферные помехи, 4 уровня
+- QSB — замирания, настраиваемый процент станций
+- Разные тона и громкости у каждой станции — как в реальном пайлапе
+- Сокращённые числа (cut numbers)
+- Интерфейс EN / RU с переключением на лету
+- Генератор позывных: США, Россия, международные — или только нужные
+- Подсчёт очков, множителей и итогового счёта (Scoreboard)
 
-## 🚀 What is Morse Walker?
+## Горячие клавиши
 
-Morse Walker is a web-based Morse code training simulator that helps you improve your CW skills through realistic contest scenarios. Practice copying callsigns, exchanges, and handling pile-ups just like in real contests!
+**Contest Mode — стандарт контест-логгеров** (Morse Runner, N1MM, DXLog):
 
-### Original Features:
-- ✅ Multiple contest modes (CWT, SST, Basic Contest, POTA)
-- ✅ Adjustable speed (WPM) and Farnsworth spacing
-- ✅ Realistic QSB and QRN effects
-- ✅ Variable tones and volumes
-- ✅ Cut numbers support
-- ✅ US callsign database
+| Клавиша | Действие |
+|---|---|
+| `F1` | CQ — общий вызов |
+| `F2` | Твой обмен (599 + номер) |
+| `F3` | TU — завершить QSO |
+| `F4` | Твой позывной |
+| `F5` | Позывной корреспондента |
+| `F7` | `?` — запрос повтора |
+| `F8` | `AGN` — повторите |
+| `F12` | Очистить поля (wipe) |
+| `Insert` | Позывной корреспондента + обмен одной посылкой |
+| `Enter` | Отправить |
+| `Esc` | Стоп |
+| `+` / `-` | Скорость |
 
-### New in Russian Edition:
-- ✅ **RDA Contest mode** with authentic Russian region codes (AL-01, BA-23, etc.)
-- ✅ **Russian callsign generator** with realistic prefixes (R, UA, RA, RU, etc.)
-- ✅ **Bilingual interface** - switch between English and Russian instantly
-- ✅ **Localized Help system** with Russian instructions
-- ✅ **Beta warning banner** with bug reporting options
+Эти пять функциональных клавиш одинаковы во всех контест-логгерах — привыкать
+лучше сразу к ним.
 
----
+**Training Mode — для новичков:**
 
-## 🎮 How to Use
+| Клавиша | Действие |
+|---|---|
+| `F1` | CQ |
+| `F2` | AGN — попросить повторить |
+| `F3` | QRS — попросить замедлиться |
+| `F4` | Твой позывной |
+| `F12` | Очистить поля |
+| `Enter` | Отправить |
+| `Shift+Enter` | TU |
+| `Esc` | Стоп |
 
-1. **Select a mode** (Single Caller, Contest, POTA, RDA, CWT, SST)
-2. **Configure your station** (callsign, speed, tone)
-3. **Click CQ** to start calling
-4. **Type the callsign** of the station you want to work
-5. **Fill in exchange fields** (name, state, serial number)
-6. **Click Send** to respond
-7. **Click TU** to complete the QSO
+Раскладка переключается тумблером под кнопками и запоминается.
+На телефоне функциональных клавиш нет — там та же панель работает как
+обычные кнопки, по нажатию пальцем.
 
-### RDA Mode Special:
-- Russian stations will send their RDA region (e.g., "R3ABC AL-23")
-- Respond with your region code
-- Track your RDA progress!
+> В контестах QRS не запрашивают — эта клавиша существует только в обучающем
+> режиме.
 
----
+## Как играть
 
-## 🌐 Language Switching
+1. Выберите режим и укажите свой позывной, имя, регион
+2. Нажмите **CQ**
+3. Наберите позывной услышанной станции (можно частично — она повторит)
+4. **Send** — передадите свой обмен, станция ответит своим
+5. Впишите принятый номер / район
+6. **TU** — QSO в логе, очки в Scoreboard
 
-Click **EN** or **RU** buttons in the top-right corner to switch interface language.
+Не расслышали? Отправьте `?` или `AGN` — повторят. `QRS` — замедлятся
+(только в обучающем режиме).
 
-All elements are translated:
-- Mode names and descriptions
-- Form labels and placeholders
-- Button texts
-- Help modal content
-- Results table headers
-
----
-
-## 🛠️ Installation
-
-### Online Version
-Visit: **[https://loloka.github.io/morsewalker](https://loloka.github.io/morsewalker)**
-
-### Local Development
+## Разработка
 
 ```bash
-# Clone the repository
 git clone https://github.com/loloka/morsewalker.git
 cd morsewalker
-
-# Install dependencies
 npm install
 
-# Run development server
-npm start
+npm start        # dev-сервер с автоперезагрузкой
+npm run build    # прод-сборка в dist/
+npm run format   # prettier
+```
 
-# Build for production
-npm run build
+Стек: ванильный JavaScript (ES6+), Web Audio API, Bootstrap 5, Webpack 5.
+Браузеры: Chrome / Edge (рекомендуется), Firefox, Safari, Opera.
 
+Устройство кода — [`ARCHITECTURE.md`](ARCHITECTURE.md).
+Текущие задачи и известные проблемы — [`CLAUDE.md`](CLAUDE.md).
 
-📁 Project Structure
-morsewalker/
-├── src/
-│   ├── localization/          # 🆕 Localization system
-│   │   ├── index.js          # LocalizationManager
-│   │   ├── en.js             # English translations
-│   │   └── ru.js             # Russian translations
-│   ├── data/
-│   │   └── russianCallsigns.js  # 🆕 500+ Russian callsigns
-│   ├── js/
-│   │   ├── app.js            # Main application
-│   │   ├── modes.js          # Contest modes logic
-│   │   ├── rda-regions.js    # 🆕 85 RDA regions
-│   │   └── stationGenerator.js
-│   ├── css/
-│   │   ├── style.css
-│   │   └── language-switcher.css  # 🆕 Language buttons
-│   └── index.html
-└── dist/                     # Built files
+## Обратная связь
 
-files
-🐛 Bug Reports & Feedback
-This project is in beta and your feedback is invaluable!
+Проект развивается по замечаниям сообщества — особенно тех, кто реально
+работает в контестах. Если видите, что что-то расходится с практикой живого
+эфира, скажите: это важнее любой новой фичи.
 
-Report Issues:
-GitHub Issues: https://github.com/sc0tfree/morsewalker/issues/new/choose
-Email (Original): henry@w6nyc.com
-Email (Russian version): admin@r9o.ru
-What to Report:
-🐛 Bugs or errors
-💡 Feature requests
-🌐 Translation improvements
-📻 RDA mode suggestions
-🤝 Contributing
-Contributions are welcome! If you'd like to improve Morse Walker:
+- Баги и предложения: [GitHub Issues](https://github.com/sc0tfree/morsewalker/issues/new/choose)
+- Русская версия: admin@r9o.ru
+- Оригинал: henry@w6nyc.com
 
-Fork the repository
-Create a feature branch (git checkout -b feature/amazing-feature)
-Commit your changes (git commit -m 'Add amazing feature')
-Push to the branch (git push origin feature/amazing-feature)
-Open a Pull Request
-📜 License
-This project is based on Morse Walker by W6NYC.
+## Благодарности
 
-🙏 Credits
-Original Author: W6NYC (Henry) - Created Morse Walker
-Russian Enhancement: R9OGL - Added Russian localization and RDA mode
-RDA Database: Russian District Award
-Callsign Data: Various amateur radio databases
+- **[W6NYC](https://qrz.com/db/W6NYC)** (Henry) — автор оригинального
+  [Morse Walker](https://github.com/sc0tfree/morsewalker)
+- **[R9OGL](https://qrz.com/db/R9OGL)** — русская версия, режим RDA, локализация
+- **R8OA** (МСМК) — замечания по стандартам контестинга и раскладке клавиш
+- **Russian District Award** — база районов РДА
 
-📊 Technical Details
-Technologies Used:
-Vanilla JavaScript (ES6+)
-Web Audio API for Morse code generation
-Bootstrap 5 for UI
-Webpack for bundling
-Prettier for code formatting
+---
 
-Browser Support:
-Chrome/Edge (recommended)
-Firefox
-Safari
-Opera
-
-Features:
-Localization: Full i18n system with hot-swapping
-Audio Engine: Real-time Morse code synthesis
-State Management: LocalStorage for settings persistence
-QSB/QRN Effects: Realistic propagation simulation
-
-🔗 Links
-Original Project: https://github.com/sc0tfree/morsewalker
-Russian Fork: https://github.com/loloka/morsewalker
-W6NYC QRZ: https://qrz.com/db/W6NYC
-R9OGL QRZ: https://qrz.com/db/R9OGL
-
-📸 Screenshots
-
-...
-
-73 de W6NYC & R9OGL
-Crafted with 🧡 and "·-"
-
+<p align="center">73 de W6NYC & R9OGL<br>Сделано с 🧡 и «·-»</p>
