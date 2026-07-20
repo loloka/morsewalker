@@ -3,6 +3,9 @@
   "version": "0.2.0",
   "description": "Веб-тренажёр CW: пайлапы, контестные режимы (RDA, WPX, CWT, SST, POTA), русская локализация. Форк Morse Walker (W6NYC).",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "cw",
     "morse-code",
@@ -20,11 +23,11 @@
     "W6NYC (Henry Prince) — оригинальный Morse Walker"
   ],
   "scripts": {
-    "test": "node --test \"tests/**/*.test.mjs\"",
+    "test": "node --test",
     "start": "webpack serve --open --config webpack.config.dev.js",
     "build": "webpack --config webpack.config.prod.js && jsdoc -c jsdoc.json",
     "format": "prettier --write \"src/**/*.{js,css,html}\"",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^11.0.0",

@@ -39,6 +39,9 @@ echo "📦 Установка зависимостей..."
 sudo -u "$USER" npm ci --include=dev --legacy-peer-deps
 
 echo "🧪 Тесты..."
+# npm test = `node --test` без аргументов: сам находит tests/**, исключая
+# node_modules. Раньше в скрипте был glob-паттерн в аргументах — его умеет
+# раскрывать только Node 22.6+, и на сервере тесты просто «не находились».
 sudo -u "$USER" npm test
 
 echo "🔨 Сборка проекта..."
