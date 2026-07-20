@@ -108,6 +108,7 @@ export const ru = {
     accuracy: 'Точность',
     mistakes: 'Ошибки',
     dupes: 'Дубли',
+    notCounted: 'НЕ ЗАСЧИТАНО',
   },
 
   // 🎮 Competition Mode

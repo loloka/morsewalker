@@ -110,6 +110,7 @@ export const en = {
     accuracy: 'Accuracy',
     mistakes: 'Mistakes',
     dupes: 'Dupes',
+    notCounted: 'NOT COUNTED',
   },
 
   // 🎮 New Competition Section

@@ -198,11 +198,8 @@ export const modes = {
   },
 };
 
-// Функция извлечения префикса для WPX
-export function extractPrefix(callsign) {
-  const match = callsign.match(/^[A-Z0-9]+\d/);
-  return match ? match[0] : callsign;
-}
+// extractPrefix живёт в scoring.js — там же, где правила WPX
+export { extractPrefix } from './scoring.js';
 
 // Функция получения режима
 export function getMode(modeName) {

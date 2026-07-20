@@ -713,6 +713,21 @@ function send() {
         (currentStation.enableFarnsworth
           ? ` / ${currentStation.farnsworthSpeed}`
           : '');
+
+      // 🏆 В одиночных режимах TU-шага нет, поэтому связь засчитываем здесь.
+      // Раньше очки в single/hst не начислялись вообще.
+      let singleResult = { status: 'ok' };
+      try {
+        singleResult = scoringSystem.addQSO(currentMode, {
+          callsign: currentStation.callsign,
+          region: currentStation.rdaRegion || currentStation.state,
+          state: currentStation.state,
+        });
+        updateScoreboard();
+      } catch (error) {
+        console.error('❌ Ошибка при добавлении QSO:', error);
+      }
+
       addTableRow(
         'resultsTable',
         totalContacts,
@@ -720,7 +735,10 @@ function send() {
         wpmString,
         currentStationAttempts,
         audioContext.currentTime - currentStationStartTime,
-        ''
+        singleResult.status === 'dupe'
+          ? '<span class="badge bg-warning text-dark">DUPE</span>'
+          : '',
+        singleResult.status
       );
 
       nextSingleStation(theirResponseTimer2);
@@ -758,18 +776,25 @@ function tu() {
   totalContacts++;
 
   let extraInfo = '';
-  extraInfo += compareExtraInfo(
+  let copiedCorrectly = true;
+
+  const check1 = compareExtraInfo(
     modeConfig.extraInfoFieldKey,
     infoValue1,
     currentStation
   );
+  extraInfo += check1.html;
+  copiedCorrectly = copiedCorrectly && check1.correct;
+
   if (modeConfig.requiresInfoField2 && modeConfig.extraInfoFieldKey2) {
     if (extraInfo.length > 0) extraInfo += ' / ';
-    extraInfo += compareExtraInfo(
+    const check2 = compareExtraInfo(
       modeConfig.extraInfoFieldKey2,
       infoValue2,
       currentStation
     );
+    extraInfo += check2.html;
+    copiedCorrectly = copiedCorrectly && check2.correct;
   }
 
   let arbitrary = null;
@@ -821,6 +846,32 @@ function tu() {
     displayInfo = `🇷🇺 ${currentStation.rdaRegion}`;
   }
 
+  // 🏆 Сначала считаем, потом пишем строку: результат подсчёта решает,
+  // как эту строку пометить (дубль / ошибка приёма / засчитано)
+  const qso = {
+    callsign: currentStation.callsign,
+    // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
+    region: currentStation.rdaRegion || currentStation.state,
+    state: currentStation.state,
+    hasError: !copiedCorrectly,
+  };
+
+  let result = { status: 'ok', points: 0 };
+  try {
+    result = scoringSystem.addQSO(currentMode, qso);
+    updateScoreboard();
+  } catch (error) {
+    console.error('❌ Ошибка при добавлении QSO:', error);
+    // Программа продолжит работу, даже если scoring сломается
+  }
+
+  // Помечаем строку прямо в логе, чтобы счётчик связей и таблица сходились
+  if (result.status === 'dupe') {
+    displayInfo = `<span class="badge bg-warning text-dark me-1">DUPE</span>${displayInfo}`;
+  } else if (result.status === 'error') {
+    displayInfo = `<span class="badge bg-danger me-1">${i18n.t('scoreboard.notCounted')}</span>${displayInfo}`;
+  }
+
   addTableRow(
     'resultsTable',
     totalContacts,
@@ -828,31 +879,9 @@ function tu() {
     wpmString,
     currentStationAttempts,
     audioContext.currentTime - currentStationStartTime,
-    displayInfo // ✅ Теперь показывает TL-27 вместо (UNDEFINED)
+    displayInfo,
+    result.status
   );
-
-  // 🏆 Calculate Score with validation
-  const qso = {
-    callsign: currentStation.callsign,
-    // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
-    region: currentStation.rdaRegion || currentStation.state,
-    state: currentStation.state,
-  };
-
-  // 🐛 DEBUG: Показываем, что отправляем
-  console.log('📤 Отправка в scoringSystem:', {
-    mode: currentMode,
-    qso: qso,
-  });
-
-  // ✅ Защита от ошибок
-  try {
-    scoringSystem.addQSO(currentMode, qso);
-    updateScoreboard();
-  } catch (error) {
-    console.error('❌ Ошибка при добавлении QSO:', error);
-    // Программа продолжит работу, даже если scoring сломается
-  }
 
   currentStations.splice(activeStationIndex, 1);
   activeStationIndex = null;
@@ -876,8 +905,17 @@ function tu() {
   currentStationStartTime = audioContext.currentTime;
 }
 
+/**
+ * Сверка принятого обмена с тем, что реально передала станция.
+ *
+ * Возвращает и разметку для таблицы, и факт ошибки: раньше результат сверки
+ * только красил ячейку, а до системы подсчёта не доходил — из-за этого
+ * «Точность» всегда показывала 100%.
+ *
+ * @returns {{ html: string, correct: boolean }}
+ */
 function compareExtraInfo(fieldKey, userInput, callingStation) {
-  if (!fieldKey) return '';
+  if (!fieldKey) return { html: '', correct: true };
 
   let expectedValue = callingStation[fieldKey];
 
@@ -885,36 +923,46 @@ function compareExtraInfo(fieldKey, userInput, callingStation) {
     let userValInt = parseInt(userInput, 10);
 
     if (isNaN(userValInt)) {
-      return `<span class="text-warning">
+      return {
+        html: `<span class="text-warning">
                 <i class="fa-solid fa-triangle-exclamation me-1"></i>
-              </span> (${expectedValue})`;
+              </span> (${expectedValue})`,
+        correct: false,
+      };
     }
 
     let correct = userValInt === Number(expectedValue);
-    return correct
-      ? `<span class="text-success">
+    return {
+      html: correct
+        ? `<span class="text-success">
            <i class="fa-solid fa-check me-1"></i><strong>${userValInt}</strong>
          </span>`
-      : `<span class="text-warning">
+        : `<span class="text-warning">
            <i class="fa-solid fa-triangle-exclamation me-1"></i>${userValInt}
-         </span> (${expectedValue})`;
+         </span> (${expectedValue})`,
+      correct,
+    };
   }
 
   let upperExpectedValue = String(expectedValue).toUpperCase();
   userInput = (userInput || '').toUpperCase().trim();
 
-  if (upperExpectedValue === '') {
-    return 'N/A';
+  // Станция без этого поля (например, DX без области) — сверять нечего
+  if (upperExpectedValue === '' || upperExpectedValue === 'UNDEFINED') {
+    return { html: 'N/A', correct: true };
   }
 
   let correct = userInput === upperExpectedValue;
-  return correct
-    ? `<span class="text-success">
+  return {
+    html: correct
+      ? `<span class="text-success">
          <i class="fa-solid fa-check me-1"></i><strong>${userInput}</strong>
        </span>`
-    : `<span class="text-warning">
+      : `<span class="text-warning">
          <i class="fa-solid fa-triangle-exclamation me-1"></i>${userInput}
-       </span> (${upperExpectedValue})`;
+       </span> (${upperExpectedValue})`,
+    correct,
+  };
 }
 
 function nextSingleStation(responseStartTime) {
@@ -1255,7 +1303,7 @@ function updateScoreboard() {
     return;
   }
 
-  const finalScore = scoringSystem.getFinalScore();
+  const finalScore = scoringSystem.getFinalScore(currentMode);
 
   // 🐛 DEBUG: Показываем счёт в консоли
   console.log('📊 Обновление Scoreboard:', finalScore);
@@ -1275,21 +1323,17 @@ function updateScoreboard() {
   if (elements.scoreQsos) elements.scoreQsos.textContent = finalScore.qsos;
   if (elements.scorePoints)
     elements.scorePoints.textContent = finalScore.points;
-  if (elements.scoreMultipliers)
-    elements.scoreMultipliers.textContent = finalScore.multipliers;
+  // В режимах без множителей честно пишем прочерк, а не бесполезный ×1
+  if (elements.scoreMultipliers) {
+    elements.scoreMultipliers.textContent = finalScore.usesMultipliers
+      ? finalScore.multipliers
+      : '—';
+  }
   if (elements.scoreTotalScore)
     elements.scoreTotalScore.textContent = finalScore.totalScore;
 
-  // Рассчитываем точность
-  const accuracy =
-    finalScore.qsos > 0
-      ? Math.round(
-          ((finalScore.qsos - finalScore.mistakes) / finalScore.qsos) * 100
-        )
-      : 100;
-
   if (elements.scoreAccuracy)
-    elements.scoreAccuracy.textContent = accuracy + '%';
+    elements.scoreAccuracy.textContent = finalScore.accuracy + '%';
   if (elements.scoreMistakes)
     elements.scoreMistakes.textContent = finalScore.mistakes;
   if (elements.scoreDupes) elements.scoreDupes.textContent = finalScore.dupes;

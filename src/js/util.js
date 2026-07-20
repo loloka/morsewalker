@@ -507,7 +507,8 @@ export function addTableRow(
   wpm,
   attempts,
   totalTime,
-  extra = null
+  extra = null,
+  status = 'ok'
 ) {
   const table = document
     .getElementById(tableName)
@@ -515,6 +516,14 @@ export function addTableRow(
 
   // Create a new row at the top
   const newRow = table.insertRow(0);
+
+  // 🏆 Дубль и ошибочно принятая связь очков не приносят —
+  // строка должна это показывать, а не молча расходиться со счётчиком
+  if (status === 'dupe') {
+    newRow.classList.add('table-warning', 'qso-dupe');
+  } else if (status === 'error') {
+    newRow.classList.add('table-danger', 'qso-error');
+  }
 
   // Add cells and populate them
   newRow.insertCell(0).textContent = index;
