@@ -75,6 +75,12 @@ export const en = {
   },
 
   // 🏆 New Scoreboard Section
+  esm: {
+    IDLE: 'Press Enter to call CQ',
+    CQ_SENT: 'Type the callsign you copied, then press Enter',
+    READY_FOR_TU:
+      'Enter the exchange you copied, then press Enter to log the QSO',
+  },
   hotkeys: {
     title: 'Hotkeys',
     contestMode: 'Contest layout',

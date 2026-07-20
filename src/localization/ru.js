@@ -73,6 +73,12 @@ export const ru = {
   },
 
   // 🏆 Scoreboard
+  esm: {
+    IDLE: 'Нажмите Enter — дадите общий вызов (CQ)',
+    CQ_SENT: 'Наберите услышанный позывной и нажмите Enter',
+    READY_FOR_TU:
+      'Запишите принятый обмен и нажмите Enter — QSO будет засчитано',
+  },
   hotkeys: {
     title: 'Горячие клавиши',
     contestMode: 'Контестная раскладка',
