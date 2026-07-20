@@ -262,14 +262,20 @@
             id="modeHst"
             value="hst"
             autocomplete="off"
+            disabled
           />
           <label
             class="btn btn-outline-primary d-flex align-items-center justify-content-center"
             for="modeHst"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Режим в разработке — откроем, когда будет соответствовать регламенту HST"
           >
             <i class="fa-solid fa-trophy me-1"></i>
             HST
-            <span class="badge bg-success ms-1">NEW</span>
+            <span class="badge bg-secondary ms-1" data-i18n="modes.soon"
+              >СКОРО</span
+            >
           </label>
 
           <!-- 🌍 WPX Mode -->
@@ -280,14 +286,20 @@
             id="modeWpx"
             value="wpx"
             autocomplete="off"
+            disabled
           />
           <label
             class="btn btn-outline-primary d-flex align-items-center justify-content-center"
             for="modeWpx"
+            data-bs-toggle="tooltip"
+            data-bs-placement="bottom"
+            title="Режим в разработке — серийные номера пока не соответствуют правилам WPX"
           >
             <i class="fa-solid fa-earth-americas me-1"></i>
             WPX
-            <span class="badge bg-success ms-1">NEW</span>
+            <span class="badge bg-secondary ms-1" data-i18n="modes.soon"
+              >СКОРО</span
+            >
           </label>
         </div>
       </div>
@@ -1376,28 +1388,36 @@
     <footer class="mt-5 py-3" style="background-color: #343a40">
       <div class="container text-center">
         <p class="mb-0" style="color: #adb5bd">
-          Crafted with <i class="fas fa-coffee text-warning"></i> and
-          <i class="fas fa-broadcast-tower text-primary"></i> by
+          <span data-i18n="footer.crafted">Сделано с</span>
+          <i class="fas fa-coffee text-warning"></i>
+          <span data-i18n="footer.and">и</span>
+          <i class="fas fa-broadcast-tower text-primary"></i>
+          &mdash;
           <a
             href="https://qrz.com/db/W6NYC"
             target="_blank"
+            rel="noopener noreferrer"
             style="color: #ffc107; text-decoration: none"
             >W6NYC</a
           >
-          | Enhanced by
+          |
+          <span data-i18n="footer.russianVersion">русская версия</span>
           <a
             href="https://qrz.com/db/R9OGL"
             target="_blank"
+            rel="noopener noreferrer"
             style="color: #17a2b8; text-decoration: none"
             >R9OGL</a
           >
-          | Check out
+          |
           <a
-            href="https://github.com/sc0tfree/morsewalker"
+            href="https://github.com/loloka/morsewalker"
             target="_blank"
+            rel="noopener noreferrer"
             style="color: #66d9ef; text-decoration: none"
-            >the source code</a
-          >!
+            data-i18n="footer.sourceCode"
+            >исходный код</a
+          >
         </p>
       </div>
     </footer>

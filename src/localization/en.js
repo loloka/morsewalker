@@ -4,6 +4,7 @@ export const en = {
   subtitle: 'Walk before you run!',
   mode: 'Mode',
   modes: {
+    soon: 'SOON',
     singleCaller: 'Single Caller',
     basicContest: 'Basic Contest',
     potaActivator: 'POTA Activator',
@@ -75,6 +76,12 @@ export const en = {
   },
 
   // 🏆 New Scoreboard Section
+  footer: {
+    crafted: 'Crafted with',
+    and: 'and',
+    russianVersion: 'Russian edition by',
+    sourceCode: 'source code',
+  },
   esm: {
     IDLE: 'Press Enter to call CQ',
     CQ_SENT: 'Type the callsign you copied, then press Enter',

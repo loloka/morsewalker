@@ -282,9 +282,16 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Mode initialization
+  //
+  // HST и WPX временно закрыты: HST не соответствует регламенту дисциплины,
+  // в WPX серийные номера не идут по порядку. Конфиги режимов оставлены —
+  // закрыт только вход, чтобы не учить новичка неправильному.
+  const DISABLED_MODES = ['hst', 'wpx'];
+
   const savedMode = localStorage.getItem('mode') || 'single';
   const modeExists = modes[savedMode] !== undefined;
-  const modeToUse = modeExists ? savedMode : 'single';
+  const modeToUse =
+    modeExists && !DISABLED_MODES.includes(savedMode) ? savedMode : 'single';
 
   const savedModeRadio = document.querySelector(
     `input[name="mode"][value="${modeToUse}"]`

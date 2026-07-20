@@ -4,6 +4,7 @@ export const ru = {
   subtitle: 'Walk before you run!',
   mode: 'Режим',
   modes: {
+    soon: 'СКОРО',
     singleCaller: 'Один позывной',
     basicContest: 'Режим контест',
     potaActivator: 'POTA Активатор',
@@ -73,6 +74,12 @@ export const ru = {
   },
 
   // 🏆 Scoreboard
+  footer: {
+    crafted: 'Сделано с',
+    and: 'и',
+    russianVersion: 'русская версия',
+    sourceCode: 'исходный код',
+  },
   esm: {
     IDLE: 'Нажмите Enter — дадите общий вызов (CQ)',
     CQ_SENT: 'Наберите услышанный позывной и нажмите Enter',

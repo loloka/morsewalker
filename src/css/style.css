@@ -280,3 +280,10 @@ button.hotkey-chip:active {
     font-size: 0.85rem;
   }
 }
+
+/* Режимы «в разработке»: вход закрыт, но видно, что они существуют */
+.btn-check:disabled + .btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: auto;
+}

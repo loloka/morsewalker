@@ -14,3 +14,5 @@
 *.ico binary
 *.mp3 binary
 *.svg text eol=lf
+
+deploy/*.sh text eol=lf
