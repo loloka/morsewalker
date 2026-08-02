@@ -11,8 +11,10 @@ export const modes = {
     },
     logic: {
       showTuStep: false,
-      cqMessage: (your, their, arb) =>
-        `CQ CQ ${your.callsign} ${your.callsign} K`,
+      // 🐛 Позывной дважды в одном CQ — не то, как реально зовут: в
+      // контестном темпе (и даже в общем вызове) двойной повтор своего
+      // же позывного просто съедает время. Один раз достаточно.
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} K`,
       // 🆕 После первого CQ на связи — короткий повторный вызов, как в
       // реальном эфире: не гонять полный CQ с позывным на каждую станцию
       cqMessageRepeat: (your, their, arb) => `QRZ?`,
@@ -40,8 +42,7 @@ export const modes = {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} TEST`,
       cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) =>
         `5NN ${your.serialNumber} ${your.name} ${your.state}`,
@@ -69,8 +70,7 @@ export const modes = {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'park',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
+      cqMessage: (your, their, arb) => `CQ CQ POTA ${your.callsign} K`,
       cqMessageRepeat: (your, their, arb) => `QRZ?`,
       myExchange: (your, their, arb) => `5NN ${your.state}`,
       yourExchange: (your, their, arb) => `${their.callsign} 5NN ${your.state}`,
@@ -99,8 +99,7 @@ export const modes = {
       // "R 5NN undefined", и сверка всегда получала undefined → N/A →
       // "correct: true" независимо от того, что ввёл пользователь.
       extraInfoFieldKey: 'rdaRegion',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
+      cqMessage: (your, their, arb) => `CQ CQ RDA ${your.callsign} TEST`,
       cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) => `5NN ${your.rdaRegion || 'MO-01'}`,
       yourExchange: (your, their, arb) =>
@@ -128,8 +127,7 @@ export const modes = {
       requiresInfoField2: true,
       extraInfoFieldKey: 'name',
       extraInfoFieldKey2: 'state',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      cqMessage: (your, their, arb) => `CQ CQ ${your.callsign} TEST`,
       cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) => `${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
@@ -154,8 +152,7 @@ export const modes = {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ SST ${your.callsign} ${your.callsign} K`,
+      cqMessage: (your, their, arb) => `CQ CQ SST ${your.callsign} K`,
       cqMessageRepeat: (your, their, arb) => `QRZ?`,
       myExchange: (your, their, arb) =>
         `${your.serialNumber} ${your.name} ${your.state}`,
@@ -201,8 +198,7 @@ export const modes = {
       showTuStep: true,
       requiresInfoField: true,
       extraInfoFieldKey: 'serialNumber',
-      cqMessage: (your, their, arb) =>
-        `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
+      cqMessage: (your, their, arb) => `CQ CQ WPX ${your.callsign} TEST`,
       cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) => `5NN ${your.serialNumber}`,
       yourExchange: (your, their, arb) =>
