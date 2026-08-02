@@ -438,6 +438,7 @@ export function getCallingStation() {
       .padStart(2, '0'),
     cwopsNumber: Math.floor(Math.random() * 4000) + 1,
     rdaRegion: rdaExchange, // 🆕 RDA обмен
+    park: generatePotaPark(stationType), // 🆕 POTA обмен
     player: null,
     qsb: inputs.qsb ? Math.random() < inputs.qsbPercentage / 100 : false,
     qsbFrequency: Math.random() * 0.45 + 0.05,
@@ -448,6 +449,27 @@ export function getCallingStation() {
 // 🆕 Функция для сброса счётчика (вызывать при сбросе симуляции)
 export function resetRDASerialNumber() {
   nonRussianSerialNumber = 1;
+}
+
+/**
+ * 🆕 Номер парка для POTA — раньше не генерировался вообще (`station.park`
+ * был всегда undefined), из-за чего сверка обмена в POTA была невозможна:
+ * classifyExchangeField сравнивал бы ввод пользователя с undefined и всегда
+ * получал "N/A, correct: true", какой бы номер парка пользователь ни ввёл.
+ *
+ * Формат — country-prefix + 4-значный номер (реальный формат POTA-референсов,
+ * например US-1234, RU-1234). Для international-станций честного маппинга
+ * "позывной → страна → код парка" в проекте пока нет (NON_US_CALLSIGN_PREFIXES
+ * не привязаны к POTA-кодам стран), поэтому используется DX-XXXX как явная
+ * заглушка, а не попытка выдать её за реальный код страны.
+ */
+function generatePotaPark(stationType) {
+  const prefix =
+    stationType === 'us' ? 'US' : stationType === 'russian' ? 'RU' : 'DX';
+  const number = (Math.floor(Math.random() * 9999) + 1)
+    .toString()
+    .padStart(4, '0');
+  return `${prefix}-${number}`;
 }
 
 function getRandomUSCallsign(formats) {

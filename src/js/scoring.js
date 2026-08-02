@@ -20,28 +20,43 @@ const MODE_RULES = {
 
 /**
  * Результат добавления QSO — чтобы app.js мог пометить строку в логе.
- * @typedef {{status: 'ok'|'dupe'|'error', points: number, isNewMultiplier: boolean}} QsoResult
+ * codes — коды ошибок из verification.js (DUP сюда не входит, см. там же).
+ * @typedef {{status: 'ok'|'dupe'|'error', points: number, isNewMultiplier: boolean, codes: string[]}} QsoResult
  */
 
 export class ScoringSystem {
   constructor() {
-    this.qsos = 0; // засчитанные связи
+    this.qsos = 0; // засчитанные (verified) связи
     this.attempted = 0; // все попытки, включая ошибочные и дубли
-    this.points = 0;
-    this.multipliers = 0;
+    this.points = 0; // verified очки
+    this.multipliers = 0; // verified мультипликаторы
+    // 🆕 Raw — «как если бы каждая непустая попытка (кроме дублей) была
+    // принята верно». Это НЕ то же самое, что Raw в MorseRunner — там Raw
+    // считается по тому, что реально ввёл оператор в своих полях обмена,
+    // и может расходиться с Verified даже по мультипликатору. У нас нет
+    // отдельного отслеживания «что ввёл оператор» для каждого поля
+    // мультипликатора (region/state и т.п. в qso всегда берутся из
+    // истины станции), поэтому Raw — это скорее «потолок счёта при
+    // текущем темпе, если бы не было ошибок приёма», посчитанный от той
+    // же истины. Дубль вычитается из обоих одинаково — его видно по
+    // своему логу сразу, сверка с чужим логом для этого не нужна.
+    this.rawPoints = 0;
+    this.rawMultipliers = 0;
     this.dupes = 0;
     this.mistakes = 0;
     this.workedCallsigns = new Set();
     this.workedMultipliers = new Set();
+    this.rawWorkedMultipliers = new Set();
   }
 
   /**
    * Добавить QSO.
    *
    * @param {string} mode
-   * @param {Object} qso — { callsign, region, state, hasError }
-   *        hasError выставляет app.js, если принятый обмен разошёлся с тем,
-   *        что реально передала станция.
+   * @param {Object} qso — { callsign, region, state, codes }
+   *        codes — массив кодов ошибок от verification.js::classifyQso()
+   *        (NR/EXCH/NIL/RST). Пустой массив или отсутствие поля — обмен
+   *        принят верно.
    * @returns {QsoResult}
    */
   addQSO(mode, qso) {
@@ -49,42 +64,67 @@ export class ScoringSystem {
 
     if (!callsign) {
       console.error('❌ Ошибка: нет позывного', qso);
-      return { status: 'error', points: 0, isNewMultiplier: false };
+      return { status: 'error', points: 0, isNewMultiplier: false, codes: [] };
     }
 
     this.attempted++;
 
-    // Дубль: в контестах повторная связь не приносит очков
+    // Дубль: в контестах повторная связь не приносит очков. Проверяем
+    // раньше сверки обмена — дубль виден по своему логу сразу, без
+    // сверки с чужим (как и в реальном контесте).
     if (this.workedCallsigns.has(callsign)) {
       this.dupes++;
       console.warn(`⚠️ Дубль: ${callsign} — 0 очков`);
-      return { status: 'dupe', points: 0, isNewMultiplier: false };
-    }
-
-    // Неверно принятый обмен: связь не засчитывается, как в реальном контесте
-    if (qso.hasError) {
-      this.mistakes++;
-      console.warn(`❌ Ошибка приёма: ${callsign} — QSO не засчитано`);
-      return { status: 'error', points: 0, isNewMultiplier: false };
+      return {
+        status: 'dupe',
+        points: 0,
+        isNewMultiplier: false,
+        codes: ['DUP'],
+      };
     }
 
     this.workedCallsigns.add(callsign);
+
+    // 🆕 Raw считаем от той же станции независимо от того, ошибся
+    // пользователь в обмене или нет — см. комментарий в конструкторе.
+    const rawCalc = this.calculateScore(mode, qso, this.rawWorkedMultipliers);
+    this.rawPoints += rawCalc.points;
+    if (rawCalc.isNewMultiplier) this.rawMultipliers++;
+
+    const codes = qso.codes || [];
+
+    // Неверно принятый обмен: связь не засчитывается, как в реальном контесте
+    if (codes.length > 0) {
+      this.mistakes++;
+      console.warn(
+        `❌ Ошибка приёма (${codes.join(',')}): ${callsign} — QSO не засчитано`
+      );
+      return { status: 'error', points: 0, isNewMultiplier: false, codes };
+    }
+
     this.qsos++;
 
-    const { points, isNewMultiplier } = this.calculateScore(mode, qso);
+    const { points, isNewMultiplier } = this.calculateScore(
+      mode,
+      qso,
+      this.workedMultipliers
+    );
     this.points += points;
+    if (isNewMultiplier) this.multipliers++;
 
     console.log(
       `✅ QSO: ${callsign} | +${points} | всего очков: ${this.points} | мульты: ${this.multipliers}`
     );
 
-    return { status: 'ok', points, isNewMultiplier };
+    return { status: 'ok', points, isNewMultiplier, codes };
   }
 
   /**
    * Очки и множитель за одну связь.
+   * @param {Set} multiplierSet — куда писать отработанные множители
+   *        (свой набор для raw и для verified — они не должны смешиваться).
    */
-  calculateScore(mode, qso) {
+  calculateScore(mode, qso, multiplierSet) {
     const rule = MODE_RULES[mode] || { points: 1, multipliers: false };
     let points = rule.points;
     let isNewMultiplier = false;
@@ -93,12 +133,10 @@ export class ScoringSystem {
       const value =
         rule.key === 'prefix' ? extractPrefix(qso.callsign) : qso[rule.key];
 
-      if (value && !this.workedMultipliers.has(value)) {
-        this.workedMultipliers.add(value);
-        this.multipliers++;
+      if (value && !multiplierSet.has(value)) {
+        multiplierSet.add(value);
         isNewMultiplier = true;
         points += rule.bonus || 0;
-        console.log(`✨ Новый множитель: ${value} (#${this.multipliers})`);
       }
     }
 
@@ -111,7 +149,7 @@ export class ScoringSystem {
   }
 
   /**
-   * Итоговый счёт.
+   * Итоговый счёт — Verified (как есть сейчас) и Raw (см. конструктор).
    * Множители умножают очки только там, где они предусмотрены правилами.
    */
   getFinalScore(mode) {
@@ -119,6 +157,9 @@ export class ScoringSystem {
     const totalScore = withMults
       ? this.points * (this.multipliers || 1)
       : this.points;
+    const rawTotalScore = withMults
+      ? this.rawPoints * (this.rawMultipliers || 1)
+      : this.rawPoints;
 
     // Точность считаем от всех попыток, а не от засчитанных связей:
     // иначе ошибки просто исчезают из знаменателя и точность всегда 100%
@@ -132,6 +173,9 @@ export class ScoringSystem {
       multipliers: this.multipliers,
       usesMultipliers: withMults,
       totalScore,
+      rawPoints: this.rawPoints,
+      rawMultipliers: this.rawMultipliers,
+      rawTotalScore,
       dupes: this.dupes,
       mistakes: this.mistakes,
       accuracy,
@@ -143,10 +187,13 @@ export class ScoringSystem {
     this.attempted = 0;
     this.points = 0;
     this.multipliers = 0;
+    this.rawPoints = 0;
+    this.rawMultipliers = 0;
     this.dupes = 0;
     this.mistakes = 0;
     this.workedCallsigns.clear();
     this.workedMultipliers.clear();
+    this.rawWorkedMultipliers.clear();
   }
 }
 

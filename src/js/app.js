@@ -39,6 +39,7 @@ import {
   resetRDASerialNumber,
 } from './stationGenerator.js';
 import { updateStaticIntensity } from './audio.js';
+import { classifyQso } from './verification.js';
 import { modes } from './modes.js';
 import { LAYOUTS } from './hotkeys.js';
 import { i18n } from '../localization/index.js';
@@ -60,6 +61,9 @@ let totalContacts = 0;
 let yourStation = null;
 let lastRespondingStations = null;
 const farnsworthLowerBy = 6;
+// 🆕 Первый CQ в сессии — полный (с позывным), дальше — короткий QRZ?,
+// как в реальном эфире. Сбрасывается вместе с остальным состоянием игры.
+let hasSentFirstCq = false;
 
 /**
  * ⏎ Стадии QSO для ESM (Enter Sends Message).
@@ -426,6 +430,7 @@ function resetGameState() {
   currentStationAttempts = 0;
   currentStationStartTime = null;
   totalContacts = 0;
+  hasSentFirstCq = false;
   setQsoState(QSO_STATE.IDLE);
 
   // 🏆 Reset Scoring
@@ -475,7 +480,12 @@ function cq() {
   yourStation = getYourStation();
   yourStation.player = createMorsePlayer(yourStation);
 
-  let cqMsg = modeConfig.cqMessage(yourStation, null, null);
+  // 🆕 Полный CQ с позывным только в первый раз, дальше — короткий QRZ?
+  let cqMsg =
+    hasSentFirstCq && typeof modeConfig.cqMessageRepeat === 'function'
+      ? modeConfig.cqMessageRepeat(yourStation, null, null)
+      : modeConfig.cqMessage(yourStation, null, null);
+  hasSentFirstCq = true;
   let yourResponseTimer = yourStation.player.playSentence(
     cqMsg,
     audioContext.currentTime + backgroundStaticDelay
@@ -774,6 +784,7 @@ function tu() {
   const modeConfig = getModeConfig();
   if (!modeConfig.showTuStep || !readyForTU) return;
 
+  const responseField = document.getElementById('responseField');
   const infoField = document.getElementById('infoField');
   const infoField2 = document.getElementById('infoField2');
   let infoValue1 = infoField.value.trim();
@@ -782,26 +793,25 @@ function tu() {
   let currentStation = currentStations[activeStationIndex];
   totalContacts++;
 
-  let extraInfo = '';
-  let copiedCorrectly = true;
+  // 🆕 Классификация обмена вынесена в verification.js — чистая функция,
+  // коды DUP/NIL/RST/NR (+ наш EXCH) идут прямо в scoringSystem, а не
+  // теряются в разметке ячейки, как раньше.
+  const verification = classifyQso({
+    station: currentStation,
+    userCallsign: responseField.value,
+    fieldKey: modeConfig.extraInfoFieldKey,
+    userInput: infoValue1,
+    fieldKey2:
+      modeConfig.requiresInfoField2 && modeConfig.extraInfoFieldKey2
+        ? modeConfig.extraInfoFieldKey2
+        : null,
+    userInput2: infoValue2,
+  });
 
-  const check1 = compareExtraInfo(
-    modeConfig.extraInfoFieldKey,
-    infoValue1,
-    currentStation
-  );
-  extraInfo += check1.html;
-  copiedCorrectly = copiedCorrectly && check1.correct;
-
+  let extraInfo = verification.field1.html;
   if (modeConfig.requiresInfoField2 && modeConfig.extraInfoFieldKey2) {
     if (extraInfo.length > 0) extraInfo += ' / ';
-    const check2 = compareExtraInfo(
-      modeConfig.extraInfoFieldKey2,
-      infoValue2,
-      currentStation
-    );
-    extraInfo += check2.html;
-    copiedCorrectly = copiedCorrectly && check2.correct;
+    extraInfo += verification.field2.html;
   }
 
   let arbitrary = null;
@@ -854,16 +864,16 @@ function tu() {
   }
 
   // 🏆 Сначала считаем, потом пишем строку: результат подсчёта решает,
-  // как эту строку пометить (дубль / ошибка приёма / засчитано)
+  // как эту строку пометить (дубль / конкретный код ошибки / засчитано)
   const qso = {
     callsign: currentStation.callsign,
     // 🇷🇺 Для RDA используем rdaRegion (TL-27), для CWT — state (CA, TX)
     region: currentStation.rdaRegion || currentStation.state,
     state: currentStation.state,
-    hasError: !copiedCorrectly,
+    codes: verification.codes,
   };
 
-  let result = { status: 'ok', points: 0 };
+  let result = { status: 'ok', points: 0, codes: [] };
   try {
     result = scoringSystem.addQSO(currentMode, qso);
     updateScoreboard();
@@ -872,11 +882,11 @@ function tu() {
     // Программа продолжит работу, даже если scoring сломается
   }
 
-  // Помечаем строку прямо в логе, чтобы счётчик связей и таблица сходились
-  if (result.status === 'dupe') {
-    displayInfo = `<span class="badge bg-warning text-dark me-1">DUPE</span>${displayInfo}`;
-  } else if (result.status === 'error') {
-    displayInfo = `<span class="badge bg-danger me-1">${i18n.t('scoreboard.notCounted')}</span>${displayInfo}`;
+  // Помечаем строку прямо в логе конкретным кодом (DUP/NIL/RST/NR/EXCH),
+  // а не общей надписью "не засчитано" — коду сходится со scoringSystem,
+  // потому что оба берутся из одного и того же result.codes
+  if (result.status !== 'ok') {
+    displayInfo = `${codesToBadges(result.codes)}${displayInfo}`;
   }
 
   addTableRow(
@@ -897,7 +907,6 @@ function tu() {
   setQsoState(QSO_STATE.CQ_SENT);
   updateActiveStations(currentStations.length);
 
-  const responseField = document.getElementById('responseField');
   responseField.value = '';
   infoField.value = '';
   infoField2.value = '';
@@ -913,63 +922,30 @@ function tu() {
 }
 
 /**
- * Сверка принятого обмена с тем, что реально передала станция.
- *
- * Возвращает и разметку для таблицы, и факт ошибки: раньше результат сверки
- * только красил ячейку, а до системы подсчёта не доходил — из-за этого
- * «Точность» всегда показывала 100%.
- *
- * @returns {{ html: string, correct: boolean }}
+ * Бейджи по кодам ошибок в духе лога MorseRunner: DUP/NIL/RST — из его
+ * Readme.txt, NR — тоже оттуда (неверный номер обмена). EXCH — наше
+ * расширение под нечисловые поля обмена (имя/область/район/парк), которых
+ * у MorseRunner нет — см. подробный комментарий в verification.js.
  */
-function compareExtraInfo(fieldKey, userInput, callingStation) {
-  if (!fieldKey) return { html: '', correct: true };
+const CODE_BADGE_CLASS = {
+  DUP: 'bg-warning text-dark',
+  NIL: 'bg-danger',
+  RST: 'bg-danger',
+  NR: 'bg-danger',
+  EXCH: 'bg-danger',
+};
 
-  let expectedValue = callingStation[fieldKey];
-
-  if (fieldKey === 'serialNumber' || fieldKey === 'cwopsNumber') {
-    let userValInt = parseInt(userInput, 10);
-
-    if (isNaN(userValInt)) {
-      return {
-        html: `<span class="text-warning">
-                <i class="fa-solid fa-triangle-exclamation me-1"></i>
-              </span> (${expectedValue})`,
-        correct: false,
-      };
-    }
-
-    let correct = userValInt === Number(expectedValue);
-    return {
-      html: correct
-        ? `<span class="text-success">
-           <i class="fa-solid fa-check me-1"></i><strong>${userValInt}</strong>
-         </span>`
-        : `<span class="text-warning">
-           <i class="fa-solid fa-triangle-exclamation me-1"></i>${userValInt}
-         </span> (${expectedValue})`,
-      correct,
-    };
-  }
-
-  let upperExpectedValue = String(expectedValue).toUpperCase();
-  userInput = (userInput || '').toUpperCase().trim();
-
-  // Станция без этого поля (например, DX без области) — сверять нечего
-  if (upperExpectedValue === '' || upperExpectedValue === 'UNDEFINED') {
-    return { html: 'N/A', correct: true };
-  }
-
-  let correct = userInput === upperExpectedValue;
-  return {
-    html: correct
-      ? `<span class="text-success">
-         <i class="fa-solid fa-check me-1"></i><strong>${userInput}</strong>
-       </span>`
-      : `<span class="text-warning">
-         <i class="fa-solid fa-triangle-exclamation me-1"></i>${userInput}
-       </span> (${upperExpectedValue})`,
-    correct,
-  };
+function codesToBadges(codes) {
+  if (!codes || codes.length === 0) return '';
+  return codes
+    .map((code) => {
+      const cls = CODE_BADGE_CLASS[code] || 'bg-danger';
+      // 🆕 Подсказка при наведении — новичку не всегда очевидно, что
+      // значит трёхбуквенный код, даже если он стандартный
+      const title = i18n.t(`scoreboard.codes.${code}`);
+      return `<span class="badge ${cls} me-1" title="${title}">${code}</span>`;
+    })
+    .join('');
 }
 
 function nextSingleStation(responseStartTime) {
@@ -1274,6 +1250,7 @@ function reset() {
   currentStations = [];
   activeStationIndex = null;
   readyForTU = false;
+  hasSentFirstCq = false;
   setQsoState(QSO_STATE.IDLE);
 
   // Reset RDA serial number for non-Russian stations
@@ -1321,6 +1298,7 @@ function updateScoreboard() {
     scorePoints: document.getElementById('scorePoints'),
     scoreMultipliers: document.getElementById('scoreMultipliers'),
     scoreTotalScore: document.getElementById('scoreTotalScore'),
+    scoreRawScore: document.getElementById('scoreRawScore'), // 🆕
     scoreAccuracy: document.getElementById('scoreAccuracy'),
     scoreMistakes: document.getElementById('scoreMistakes'),
     scoreDupes: document.getElementById('scoreDupes'),
@@ -1338,6 +1316,11 @@ function updateScoreboard() {
   }
   if (elements.scoreTotalScore)
     elements.scoreTotalScore.textContent = finalScore.totalScore;
+  // 🆕 Raw — «как если бы каждая попытка была принята верно», см.
+  // комментарий в scoring.js. Показываем рядом с Verified (Total Score),
+  // чтобы разница была видна сразу, а не только в консоли.
+  if (elements.scoreRawScore)
+    elements.scoreRawScore.textContent = finalScore.rawTotalScore;
 
   if (elements.scoreAccuracy)
     elements.scoreAccuracy.textContent = finalScore.accuracy + '%';

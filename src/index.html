@@ -1360,9 +1360,14 @@
       </div>
 
       <div class="col-md-3">
-        <div class="card text-center bg-primary text-white">
+        <div
+          class="card text-center bg-primary text-white"
+          title="Verified — счёт после сверки принятого обмена с тем, что реально передала станция"
+        >
           <div class="card-body">
-            <h5 class="card-title" data-i18n="scoreboard.total">Total Score</h5>
+            <h5 class="card-title" data-i18n="scoreboard.total">
+              Total Score (Verified)
+            </h5>
             <p class="card-text display-4 fw-bold" id="scoreTotalScore">0</p>
           </div>
         </div>
@@ -1373,6 +1378,13 @@
     <div class="row mt-3">
       <div class="col-12">
         <div class="alert alert-info">
+          <strong
+            data-i18n="scoreboard.raw"
+            title="Raw — счёт по всем попыткам так, будто каждая принята верно (кроме дублей)"
+            >Raw:</strong
+          >
+          <span id="scoreRawScore">0</span>
+          <span class="mx-3">|</span>
           <strong data-i18n="scoreboard.accuracy">Accuracy:</strong>
           <span id="scoreAccuracy">100%</span>
           <span class="mx-3">|</span>

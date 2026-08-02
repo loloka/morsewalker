@@ -113,11 +113,18 @@ export const en = {
     qsos: 'QSOs',
     points: 'Points',
     multipliers: 'Multipliers',
-    total: 'Total Score',
+    total: 'Total Score (Verified)',
+    raw: 'Raw',
     accuracy: 'Accuracy',
     mistakes: 'Mistakes',
     dupes: 'Dupes',
-    notCounted: 'NOT COUNTED',
+    codes: {
+      DUP: 'Duplicate — this callsign was already worked',
+      NIL: "Callsign didn't match what the station actually sent",
+      RST: 'RST copied incorrectly',
+      NR: 'Exchange number copied incorrectly',
+      EXCH: 'Exchange field copied incorrectly (name/state/region/park)',
+    },
   },
 
   // 🎮 New Competition Section

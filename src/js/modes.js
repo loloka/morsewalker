@@ -13,12 +13,16 @@ export const modes = {
       showTuStep: false,
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} K`,
-      myExchange: (your, their, arb) => `599 ${your.name} ${your.state}`,
+      // 🆕 После первого CQ на связи — короткий повторный вызов, как в
+      // реальном эфире: не гонять полный CQ с позывным на каждую станцию
+      cqMessageRepeat: (your, their, arb) => `QRZ?`,
+      myExchange: (your, their, arb) => `5NN ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
-        `${their.callsign} 599 ${your.name} ${your.state}`,
-      theirExchange: (your, their, arb) => `R 599 ${their.name} ${their.state}`,
+        `${their.callsign} 5NN ${your.name} ${your.state}`,
+      theirExchange: (your, their, arb) => `R 5NN ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU ${their.name} 73`,
-      theirSignoff: (your, their, arb) => `73 ${your.callsign}`,
+      // 🆕 Не повторяем свой позывной в конце — избыточно, как в живом эфире
+      theirSignoff: (your, their, arb) => `73`,
     },
   },
 
@@ -38,14 +42,16 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) =>
-        `599 ${your.serialNumber} ${your.name} ${your.state}`,
+        `5NN ${your.serialNumber} ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
-        `${their.callsign} 599 ${your.serialNumber} ${your.name} ${your.state}`,
+        `${their.callsign} 5NN ${your.serialNumber} ${your.name} ${your.state}`,
       theirExchange: (your, their, arb) =>
-        `R 599 ${their.serialNumber} ${their.name} ${their.state}`,
+        `R 5NN ${their.serialNumber} ${their.name} ${their.state}`,
       yourSignoff: (your, their, arb) => `TU`,
-      theirSignoff: (your, their, arb) => `TU ${your.callsign}`,
+      // 🆕 Не повторяем свой позывной в конце — избыточно, как в живом эфире
+      theirSignoff: (your, their, arb) => `TU`,
     },
   },
 
@@ -53,7 +59,7 @@ export const modes = {
     ui: {
       showTuButton: true,
       showInfoField: true,
-      infoFieldPlaceholder: 'Park Reference (e.g., K-1234)',
+      infoFieldPlaceholder: 'Park Reference (e.g., US-1234)',
       showInfoField2: false,
       tableExtraColumn: true,
       extraColumnHeader: 'Park',
@@ -65,11 +71,13 @@ export const modes = {
       extraInfoFieldKey: 'park',
       cqMessage: (your, their, arb) =>
         `CQ CQ POTA ${your.callsign} ${your.callsign} K`,
-      myExchange: (your, their, arb) => `599 ${your.state}`,
-      yourExchange: (your, their, arb) => `${their.callsign} 599 ${your.state}`,
-      theirExchange: (your, their, arb) => `R 599 ${their.park || 'K-1234'}`,
+      cqMessageRepeat: (your, their, arb) => `QRZ?`,
+      myExchange: (your, their, arb) => `5NN ${your.state}`,
+      yourExchange: (your, their, arb) => `${their.callsign} 5NN ${your.state}`,
+      theirExchange: (your, their, arb) => `R 5NN ${their.park || 'K-1234'}`,
       yourSignoff: (your, their, arb) => `TU ${arb || 'K-1234'} 73`,
-      theirSignoff: (your, their, arb) => `73 ${your.callsign}`,
+      // 🆕 Не повторяем свой позывной в конце — избыточно, как в живом эфире
+      theirSignoff: (your, their, arb) => `73`,
     },
   },
 
@@ -86,14 +94,19 @@ export const modes = {
     logic: {
       showTuStep: true,
       requiresInfoField: true,
-      extraInfoFieldKey: 'region',
+      // 🐛 Было 'region' — такого поля на объекте станции нет вообще
+      // (stationGenerator.js кладёт rdaRegion), поэтому и в эфир уходило
+      // "R 5NN undefined", и сверка всегда получала undefined → N/A →
+      // "correct: true" независимо от того, что ввёл пользователь.
+      extraInfoFieldKey: 'rdaRegion',
       cqMessage: (your, their, arb) =>
         `CQ CQ RDA ${your.callsign} ${your.callsign} TEST`,
-      myExchange: (your, their, arb) => `599 ${your.region || 'MO-01'}`,
+      cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
+      myExchange: (your, their, arb) => `5NN ${your.rdaRegion || 'MO-01'}`,
       yourExchange: (your, their, arb) =>
-        `${their.callsign} 599 ${your.region || 'MO-01'}`,
-      theirExchange: (your, their, arb) => `R 599 ${their.region}`,
-      yourSignoff: (your, their, arb) => `TU ${arb || their.region} 73`,
+        `${their.callsign} 5NN ${your.rdaRegion || 'MO-01'}`,
+      theirExchange: (your, their, arb) => `R 5NN ${their.rdaRegion}`,
+      yourSignoff: (your, their, arb) => `TU ${arb || their.rdaRegion} 73`,
       theirSignoff: (your, their, arb) => `TU 73`,
     },
   },
@@ -117,6 +130,7 @@ export const modes = {
       extraInfoFieldKey2: 'state',
       cqMessage: (your, their, arb) =>
         `CQ CQ ${your.callsign} ${your.callsign} TEST`,
+      cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
       myExchange: (your, their, arb) => `${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
         `${their.callsign} ${your.name} ${your.state}`,
@@ -142,6 +156,7 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ SST ${your.callsign} ${your.callsign} K`,
+      cqMessageRepeat: (your, their, arb) => `QRZ?`,
       myExchange: (your, their, arb) =>
         `${your.serialNumber} ${your.name} ${your.state}`,
       yourExchange: (your, their, arb) =>
@@ -188,10 +203,11 @@ export const modes = {
       extraInfoFieldKey: 'serialNumber',
       cqMessage: (your, their, arb) =>
         `CQ CQ WPX ${your.callsign} ${your.callsign} TEST`,
-      myExchange: (your, their, arb) => `599 ${your.serialNumber}`,
+      cqMessageRepeat: (your, their, arb) => `QRZ? TEST`,
+      myExchange: (your, their, arb) => `5NN ${your.serialNumber}`,
       yourExchange: (your, their, arb) =>
-        `${their.callsign} 599 ${your.serialNumber}`,
-      theirExchange: (your, their, arb) => `R 599 ${their.serialNumber}`,
+        `${their.callsign} 5NN ${your.serialNumber}`,
+      theirExchange: (your, their, arb) => `R 5NN ${their.serialNumber}`,
       yourSignoff: (your, their, arb) => `TU`,
       theirSignoff: (your, their, arb) => `TU`,
     },

@@ -53,10 +53,11 @@ test('дубль не приносит очков и помечается ста
 
 test('неверно принятый обмен не засчитывается и растит счётчик ошибок', () => {
   const s = new ScoringSystem();
-  const bad = s.addQSO('contest', { callsign: 'K1ABC', hasError: true });
+  const bad = s.addQSO('contest', { callsign: 'K1ABC', codes: ['NR'] });
 
   assert.equal(bad.status, 'error');
   assert.equal(bad.points, 0);
+  assert.deepEqual(bad.codes, ['NR']);
   assert.equal(s.qsos, 0);
   assert.equal(s.mistakes, 1);
 });
@@ -64,10 +65,49 @@ test('неверно принятый обмен не засчитывается
 test('точность считается от всех попыток, а не от засчитанных связей', () => {
   const s = new ScoringSystem();
   s.addQSO('contest', { callsign: 'K1ABC' });
-  s.addQSO('contest', { callsign: 'W2DEF', hasError: true });
+  s.addQSO('contest', { callsign: 'W2DEF', codes: ['NR'] });
 
   // Это и был баг: раньше mistakes не рос ниоткуда и точность всегда была 100%
   assert.equal(s.getFinalScore('contest').accuracy, 50);
+});
+
+test('дубль помечается кодом DUP', () => {
+  const s = new ScoringSystem();
+  s.addQSO('contest', { callsign: 'K1ABC' });
+  const dupe = s.addQSO('contest', { callsign: 'K1ABC' });
+
+  assert.deepEqual(dupe.codes, ['DUP']);
+});
+
+test('Raw-счёт учитывает попытки с ошибкой обмена, Verified — нет', () => {
+  const s = new ScoringSystem();
+  s.addQSO('contest', { callsign: 'K1ABC' }); // верно: +2
+  s.addQSO('contest', { callsign: 'W2DEF', codes: ['NR'] }); // ошибка: raw +2, verified +0
+
+  const score = s.getFinalScore('contest');
+  assert.equal(score.points, 2, 'verified не считает попытку с ошибкой');
+  assert.equal(score.rawPoints, 4, 'raw считает обе попытки как верные');
+});
+
+test('Raw-множитель не путается с Verified-множителем', () => {
+  const s = new ScoringSystem();
+  // Единственная связь с этим районом — с ошибкой в обмене.
+  // Raw даёт мультипликатор и бонус, Verified — нет (связь не засчитана).
+  const bad = s.addQSO('rda', {
+    callsign: 'R9OGL',
+    region: 'TL-27',
+    codes: ['EXCH'],
+  });
+
+  assert.equal(bad.status, 'error');
+  const score = s.getFinalScore('rda');
+  assert.equal(score.multipliers, 0, 'verified: район не подтверждён');
+  assert.equal(
+    score.rawMultipliers,
+    1,
+    'raw: район засчитан бы, будь обмен верным'
+  );
+  assert.equal(score.rawPoints, 4, '1 очко + 3 бонус за новый район, по-raw');
 });
 
 test('RDA: новый регион даёт множитель и бонус', () => {
